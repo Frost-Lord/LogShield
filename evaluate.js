@@ -6,43 +6,42 @@ async function loadModel() {
     return model;
 }
 
-const accessLogData = fs.readFileSync('accessmal.log', 'utf8');
-
+const accessLogData = fs.readFileSync('./Train/accessmal.log', 'utf8');
 
 function parseNginxLogs(logData) {
-  const logs = logData.split('\n');
-  const logRegex = /^(\S+) - - \[(.+)\] "(\S+) (.+?) (\S+)" (\d+) (\d+) "([^"]*)" "([^"]*)"/;
+    const logs = logData.split('\n');
+    const logRegex = /^(\S+) - - \[(.+)\] "(\S+) (.+?) (\S+)" (\d+) (\d+) "([^"]*)" "([^"]*)"/;
 
-  const parsedLogs = logs.map((log) => {
-      const match = log.match(logRegex);
+    const parsedLogs = logs.map((log) => {
+        const match = log.match(logRegex);
 
-      if (match) {
-          return {
-              ip: match[1],
-              timestamp: match[2],
-              method: match[3],
-              uri: match[4],
-              protocol: match[5],
-              statusCode: parseInt(match[6], 10),
-              bytesSent: parseInt(match[7], 10),
-              referer: match[8],
-              userAgent: match[9],
-              label: 0 // 0 for legitimate
-          };
-      }
-  });
+        if (match) {
+            return {
+                ip: match[1],
+                timestamp: match[2],
+                method: match[3],
+                uri: match[4],
+                protocol: match[5],
+                statusCode: parseInt(match[6], 10),
+                bytesSent: parseInt(match[7], 10),
+                referer: match[8],
+                userAgent: match[9],
+                label: 0 // 0 for legitimate
+            };
+        }
+    });
 
-  return parsedLogs.filter((log) => log !== undefined);
+    return parsedLogs.filter((log) => log !== undefined);
 }
 
 function extractFeatures(parsedLogs) {
-  return parsedLogs.map((log) => {
-      const method = log.method === 'GET' ? 1 : (log.method === 'POST' ? 2 : 0);
-      const statusCode = log.statusCode;
-      const bytesSent = log.bytesSent;
+    return parsedLogs.map((log) => {
+        const method = log.method === 'GET' ? 1 : (log.method === 'POST' ? 2 : 0);
+        const statusCode = log.statusCode;
+        const bytesSent = log.bytesSent;
 
-      return [method, statusCode, bytesSent];
-  });
+        return [method, statusCode, bytesSent];
+    });
 }
 
 async function evaluateAccessLog() {
@@ -69,19 +68,4 @@ async function evaluateAccessLog() {
     return maliciousUsers;
 }
 
-evaluateAccessLog()
-.then(maliciousUsers => {
-    if (maliciousUsers.length === 0) {
-        console.log('No malicious users detected.');
-    } else {
-        console.log('Malicious users detected:');
-        let mal = [];
-        maliciousUsers.forEach(user => {
-            if (mal.includes(user.ip) === false) {
-                mal.push(user.ip);
-            }
-        });
-        console.log(mal);
-    }
-})
-.catch(err => console.error(err));
+module.exports = evaluateAccessLog;

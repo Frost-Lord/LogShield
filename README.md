@@ -1,12 +1,12 @@
-## LogShield
+# LogShield
 LogShield is a machine learning project that uses TensorFlow.js to detect malicious activity in web server access logs. It can be used to protect your web server from Distributed Denial of Service (DDoS) attacks, which can disrupt your website and prevent legitimate users from accessing your content.
 
-# How it works
+## How it works
 LogShield uses a neural network model to analyze access logs and predict whether each user is malicious or legitimate based on their IP address, request method, response status code, and bytes sent. The model is trained on a combination of legitimate and malicious access logs, and can be retrained on new data to improve its accuracy.
 
 To use LogShield, you need to prepare your access logs in a specific format and train the model on them. Then, you can use the trained model to analyze new access logs and detect any malicious activity.
 
-# How to use it
+## How to use it
 To use LogShield, follow these steps:
 
 1. Prepare your access logs in the following format:
@@ -39,5 +39,34 @@ npm run evaluate
 
 This will load the trained model from the ddos_model.json file and analyze the access logs in the access.log file. If any malicious activity is detected, the script will output the IP addresses of the malicious users.
 
-# Conclusion
+## Installing
+
+```sh
+apt-get update && apt-get upgrade -y
+curl -fsSL https://deb.nodesource.com/setup_19.x | sudo -E bash -
+apt-get install -y nodejs nginx
+mkdir -p /etc/logshield
+cd /etc/logshield
+
+# Upload the files
+
+npm install
+cp example.env .env
+# Edit .env
+cp logshield.service /etc/systemd/system/logshield.service
+systemctl enable --now logshield
+```
+
+## Updating
+
+```sh
+cd /etc/logshield
+# upload new files
+cp logshield.service /etc/systemd/system/logshield.service
+systemctl daemon-reload
+systemctl restart logshield
+```
+
+
+## Conclusion
 LogShield is a powerful tool for protecting your web server from DDoS attacks. By using machine learning to analyze access logs, it can accurately detect malicious activity and allow you to take action before any damage is done.
