@@ -6,7 +6,7 @@ async function loadModel() {
     return model;
 }
 
-const accessLogData = fs.readFileSync('./Train/malicious/access.log', 'utf8');
+const accessLogData = fs.readFileSync('./Train/test/access.log', 'utf8');
 
 function parseNginxLogs(logData) {
     const logs = logData.split('\n');
@@ -56,7 +56,7 @@ async function evaluateAccessLog() {
 
     // Predict malicious users
     const predictions = model.predict(normalizedDataset);
-    const threshold = 0.5;
+    const threshold = 0.8;
     const maliciousUsers = [];
 
     predictions.dataSync().forEach((prediction, index) => {
