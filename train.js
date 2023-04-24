@@ -99,7 +99,7 @@ async function train(trainDataset, trainLabels) {
         callbacks: tf.callbacks.earlyStopping({ monitor: 'val_loss', patience: 300 }),
     });
     console.log('Training completed');
-    await model.save('file://./ddos_model.json');
+    await model.save('file://./model');
 }
 
 async function evaluate(testDataset, testLabels) {

@@ -30,14 +30,14 @@ npm i
 node index.js
 ```
 
-This will train the model on your combined access logs and save the trained model to a file called ddos_model.json.
+This will train the model on your combined access logs and save the trained model to a file called model.json.
 
 5. Once the model is trained, you can use it to analyze new access logs and detect malicious activity by running the following command:
 ```
 npm run evaluate
 ```
 
-This will load the trained model from the ddos_model.json file and analyze the access logs in the access.log file. If any malicious activity is detected, the script will output the IP addresses of the malicious users.
+This will load the trained model from the model.json file and analyze the access logs in the access.log file. If any malicious activity is detected, the script will output the IP addresses of the malicious users.
 
 ## Installing
 
