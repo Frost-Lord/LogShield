@@ -3,19 +3,16 @@ function sleep(ms) {
 }
 
 async function calculateNonce(rayId, userIp) {
-  let hashInput = userIp + rayId;
-  let hashOutput;
+  let secret = '';
 
-  for (let i = 0; i < Difficulty; i++) {
-    const hash = new TextEncoder().encode(hashInput);
-    const digest = await crypto.subtle.digest('SHA-256', hash);
-    const digestArray = new Uint8Array(digest);
-    hashOutput = Array.from(digestArray).slice(0, 8).map(b => b.toString(16).padStart(2, '0')).join('');
-    hashInput = hashOutput;
+  for (let i = 0; i < rayId.length; i++) {
+    const encryptedChar = rayId.charCodeAt(i);
+    const ipChar = userIp.charCodeAt(i % userIp.length);
+    const decryptedChar = encryptedChar ^ ipChar;
+    secret += String.fromCharCode(decryptedChar);
   }
 
-  console.log('Calculated Nonce:', hashOutput.slice(0, 16));
-  return hashOutput.slice(0, 16);
+  return secret;
 }
 
 async function submitResult(nonce) {

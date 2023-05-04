@@ -35,24 +35,22 @@ const targetUrl = `http://localhost:${targetPort}`;
 const Difficulty = 4;
 
 function generateRayId(ip, difficulty) {
-  let hashInput = ip + process.env.SECRET;
-  let hashOutput;
+  let encryptedSecret = '';
 
-  for (let i = 0; i < difficulty; i++) {
-    const hash = crypto.createHash('sha256');
-    hash.update(hashInput);
-    hashOutput = hash.digest('hex').substr(0, 16);
-    hashInput = hashOutput;
+  for (let i = 0; i < process.env.SECRET.length; i++) {
+    const secretChar = process.env.SECRET.charCodeAt(i);
+    const ipChar = ip.charCodeAt(i % ip.length);
+    const encryptedChar = secretChar ^ ipChar;
+    encryptedSecret += String.fromCharCode(encryptedChar);
   }
 
-  return hashOutput;
+  return encryptedSecret;
 }
 
 
 function checkRayId(rayId, ip, difficulty) {
-  const expectedRayId = generateRayId(ip, difficulty);
-  console.log('Expected Ray ID:', expectedRayId, 'Received Ray ID:', rayId);
-  return rayId === expectedRayId;
+  console.log('Expected Ray ID:', process.env.SECRET, 'Received Ray ID:', rayId);
+  return rayId === process.env.SECRET;
 }
 
 app.get('/verify-ray', async (req, res) => {
