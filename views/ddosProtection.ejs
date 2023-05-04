@@ -1,0 +1,30 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DDoS Protection</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+
+<body>
+  <div class="container" style="color: black;">
+    <h2>LogShield</h2>
+    <p style="text-align: center; font-size: 12px;">Ray ID: <span id="rayId">
+      <div id="hashedInput" style="display:none;"><%= req.ip + "3il54hbi323wptu89awe9gyse8ogr4e" %></div>
+
+        <%= newRayId %>
+      </span></p>
+    <br>
+    <p id="calculatingNonce">Calculating Nonce: ...</p>
+    <p id="submittingResult">Submitting Result: ...</p>
+    <p id="redirecting">Redirecting: ...</p>
+
+  </div>
+  <script>
+    const Difficulty = "<%= Difficulty %>";
+  </script>
+  <script src="/client.js"></script>
+</body>
+
+</html>
