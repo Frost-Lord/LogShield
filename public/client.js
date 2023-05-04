@@ -2,8 +2,8 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function calculateNonce(rayId) {
-  let hashInput = rayId;
+async function calculateNonce(rayId, userIp) {
+  let hashInput = userIp + rayId;
   let hashOutput;
 
   for (let i = 0; i < Difficulty; i++) {
@@ -19,35 +19,28 @@ async function calculateNonce(rayId) {
 }
 
 async function submitResult(nonce) {
-  const targetUrl = `${window.location.origin}`;
-  const response = await fetch(targetUrl, {
-    method: 'POST',
-    headers: new Headers({
-      'Content-Type': 'application/json',
-    }),
-    body: JSON.stringify({ ray: nonce }),
-  });
+  const targetUrl = `${window.location.origin}/verify-ray?ray=${nonce}`;
+  const response = await fetch(targetUrl);
 
-  return response.ok;
+  return response.ok ? true : false;
 }
 
 (async () => {
-  const rayIdElement = document.getElementById('rayId');
-  const rayId = rayIdElement.textContent.trim();
+  document.addEventListener('DOMContentLoaded', async () => {
+    const calculatingNonceElement = document.getElementById('calculatingNonce');
+    const submittingResultElement = document.getElementById('submittingResult');
+    const redirectingElement = document.getElementById('redirecting');
 
-  const calculatingNonceElement = document.getElementById('calculatingNonce');
-  const submittingResultElement = document.getElementById('submittingResult');
-  const redirectingElement = document.getElementById('redirecting');
+    const nonce = await calculateNonce(secret, userIp);
+    calculatingNonceElement.textContent = 'Calculating Nonce: ✓';
 
-  const nonce = await calculateNonce(rayId);
-  calculatingNonceElement.textContent = 'Calculating Nonce: ✓';
-
-  const isResultAccepted = await submitResult(nonce);
-  if (isResultAccepted) {
-    redirectingElement.textContent = 'Redirecting: ✓';
-    await sleep(1000);
-    window.location.reload();
-  } else {
-    submittingResultElement.textContent = 'Submitting Result: ✗';
-  }
+    const isResultAccepted = await submitResult(nonce);
+    if (isResultAccepted) {
+      redirectingElement.textContent = 'Redirecting: ✓';
+      await sleep(3000);
+      window.location.reload();
+    } else {
+      submittingResultElement.textContent = 'Submitting Result: ✗';
+    }
+  });
 })();

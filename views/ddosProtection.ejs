@@ -5,26 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DDoS Protection</title>
   <link rel="stylesheet" href="/styles.css">
+  <script>
+    const Difficulty = "<%= Difficulty %>";
+    const secret = '<%= secret %>';
+    const userIp = '<%= userIp %>';
+  </script>
+    <script src="/client.js"></script>
 </head>
 
 <body>
   <div class="container" style="color: black;">
     <h2>LogShield</h2>
-    <p style="text-align: center; font-size: 12px;">Ray ID: <span id="rayId">
-      <div id="hashedInput" style="display:none;"><%= req.ip + "3il54hbi323wptu89awe9gyse8ogr4e" %></div>
-
-        <%= newRayId %>
-      </span></p>
+    <p style="text-align: center; font-size: 12px;">Ray ID: <span id="rayId"><%= secret %></span></p>
     <br>
-    <p id="calculatingNonce">Calculating Nonce: ...</p>
-    <p id="submittingResult">Submitting Result: ...</p>
-    <p id="redirecting">Redirecting: ...</p>
-
+    <p>Calculating Nonce: <span id="calculatingNonce">...</span></p>
+    <p>Submitting Result: <span id="submittingResult">...</span></p>
+    <p>Redirecting: <span id="redirecting">...</span></p>
   </div>
-  <script>
-    const Difficulty = "<%= Difficulty %>";
-  </script>
-  <script src="/client.js"></script>
 </body>
 
 </html>

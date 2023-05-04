@@ -1,17 +1,16 @@
 const express = require('express');
 const { createProxyMiddleware } = require('http-proxy-middleware');
-const { rateLimiter, trackNonceRequests } = require('./rateLimiter');
+const session = require('express-session');
 const crypto = require('crypto');
 const path = require('path');
-const bodyParser = require('body-parser');
 const app = express();
+require("dotenv").config();
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.engine(".ejs", require("ejs").__express);
 app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "/public")));
-app.use(bodyParser.urlencoded({ extended: true }));
 app.set("views", __dirname + "/views");
 app.use(express.json());
 app.use(
@@ -21,15 +20,22 @@ app.use(
 );
 app.set("trust proxy", true);
 
+app.use(
+  session({
+    secret: 'sg809psargae9pr8gaertgheho9ar8g',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { maxAge: 15 * 60 * 1000 }, // 15 minutes
+  })
+);
+
 const port = 7000;
 const targetPort = 7248;
 const targetUrl = `http://localhost:${targetPort}`;
 const Difficulty = 4;
 
-const ipStore = new Map();
-
 function generateRayId(ip, difficulty) {
-  let hashInput = ip + "3il54hbi323wptu89awe9gyse8ogr4e";
+  let hashInput = ip + process.env.SECRET;
   let hashOutput;
 
   for (let i = 0; i < difficulty; i++) {
@@ -42,43 +48,36 @@ function generateRayId(ip, difficulty) {
   return hashOutput;
 }
 
+
 function checkRayId(rayId, ip, difficulty) {
   const expectedRayId = generateRayId(ip, difficulty);
   console.log('Expected Ray ID:', expectedRayId, 'Received Ray ID:', rayId);
   return rayId === expectedRayId;
 }
 
-app.post('/', async (req, res) => {
+app.get('/verify-ray', async (req, res) => {
   const userIp = req.ip;
-  const rayId = req.body.ray;
-  const { nonce } = req.body;
+  const rayId = req.query.ray;
 
-  if (nonce && checkRayId(rayId, userIp, Difficulty)) {
-    ipStore.set(userIp, true);
-    console.log('Whitelisted IP:', userIp);
+  if (checkRayId(rayId, userIp, Difficulty)) {
+    req.session.whitelisted = true;
     res.sendStatus(200);
   } else {
     res.sendStatus(400);
   }
 });
 
+
 app.use(async (req, res, next) => {
   const userIp = req.ip;
-  const rayId = req.query.ray || (req.body && req.body.ray);
-  const isWhitelisted = ipStore.has(userIp);
+  const isWhitelisted = req.session.whitelisted;
 
-  if (rayId && checkRayId(rayId, req.ip, Difficulty)) {
-    ipStore.set(userIp, true);
-    console.log('Whitelisted IP:', userIp);
-  }
-
-  if (isWhitelisted || checkRayId(rayId, req.ip, Difficulty)) {
+  if (isWhitelisted) {
     next();
     console.log('Whitelisted IP:', userIp);
   } else {
-    const newRayId = generateRayId(req.ip, Difficulty);
-    res.render('ddosProtection', { req, newRayId, Difficulty });
-    trackNonceRequests(req, res, next);
+    const secret = generateRayId(req.ip);
+    res.render('ddosProtection', { req, secret, Difficulty, userIp: req.ip });
     console.log('Non-whitelisted IP:', userIp);
   }
 });
@@ -88,16 +87,6 @@ app.use(
   createProxyMiddleware({
     target: targetUrl,
     changeOrigin: true,
-    pathRewrite: (path, req) => {
-      const newPath = path.replace(/(\?|&)ray=([^&]+)/, '');
-      return newPath;
-    },
-    onProxyReq: (proxyReq, req) => {
-      const rayId = req.query.ray;
-      if (rayId) {
-        proxyReq.setHeader('rayId', rayId);
-      }
-    },
   })
 );
 
