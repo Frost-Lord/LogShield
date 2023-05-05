@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-function generateRayId(ip, difficulty) {
+function generateRayId(ip) {
     let encryptedSecret = '';
 
     for (let i = 0; i < process.env.SECRET.length; i++) {
@@ -14,7 +14,7 @@ function generateRayId(ip, difficulty) {
     return encryptedSecret;
 }
 
-function checkRayId(rayId, ip, difficulty) {
+function checkRayId(rayId, ip) {
     console.log('Expected Ray ID:', process.env.SECRET, 'Received Ray ID:', rayId);
     return rayId === process.env.SECRET;
 }
@@ -23,7 +23,7 @@ router.get('/verify-ray', async (req, res) => {
     const userIp = req.ip || req.headers['x-forwarded-for'];
     const rayId = req.query.ray;
 
-    if (checkRayId(rayId, userIp, Difficulty)) {
+    if (checkRayId(rayId, userIp)) {
         req.session.whitelisted = true;
         res.sendStatus(200);
     } else {
@@ -31,4 +31,4 @@ router.get('/verify-ray', async (req, res) => {
     }
 });
 
-module.exports = router;
+module.exports = { router, generateRayId };
