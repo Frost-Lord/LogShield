@@ -6,12 +6,7 @@ const app = express();
 const axios = require('axios');
 require("dotenv").config();
 
-const banningRoutes = require('./routes/banning');
-const verifyRoutes = require('./routes/verify');
-
-const { router: banningRouter, isBanned } = banningRoutes;
-const { router: verifyRouter, generateRayId } = verifyRoutes;
-
+// Express configuration
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.engine(".ejs", require("ejs").__express);
@@ -19,14 +14,14 @@ app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "/public")));
 app.set("views", __dirname + "/views");
 app.use(express.json());
-
+app.set("trust proxy", true);
 app.use(
   express.urlencoded({
     extended: true,
   })
 );
-app.set("trust proxy", true);
 
+// Session configuration
 app.use(
   session({
     secret: 'sg809psargae9pr8gaertgheho9ar8g',
@@ -36,13 +31,17 @@ app.use(
   })
 );
 
+const banningRoutes = require('./routes/banning');
+const verifyRoutes = require('./routes/verify');
+
+const { router: banningRouter, isBanned } = banningRoutes;
+const { router: verifyRouter, generateRayId } = verifyRoutes;
+
 app.use(runcheck);
 app.use(banningRouter);
 app.use(verifyRouter);
 
-const port = 7000;
-const targetPort = 7248;
-const targetUrl = `http://localhost:${targetPort}`;
+// Proxy configuration
 const Difficulty = process.env.DIFFICULTY || 4;
 
 async function runcheck(req, res, next) {
@@ -52,7 +51,7 @@ async function runcheck(req, res, next) {
     res.render('banned', { userIp });
   } else {
     try {
-      await axios.get(targetUrl);
+      await axios.get(process.env.TARGETURL);
       next();
     } catch (error) {
       res.render('badGateway', { userIp });
@@ -65,7 +64,7 @@ app.use(async (req, res, next) => {
   const isWhitelisted = req.session.whitelisted;
 
   if (isWhitelisted) {
-    next();
+    //next();
   } else {
     const secret = generateRayId(req.ip);
     res.render('ddosProtection', { req, secret, Difficulty, userIp: userIp });
@@ -75,11 +74,11 @@ app.use(async (req, res, next) => {
 app.use(
   '/',
   createProxyMiddleware({
-    target: targetUrl,
+    target: process.env.TARGETURL,
     changeOrigin: true,
   })
 );
 
-app.listen(port, () => {
-  console.log(`Proxy server listening at http://localhost:${port}`);
+app.listen(process.env.PORT, () => {
+  console.log(`Proxy server listening at http://localhost:${process.env.PORT}`);
 });
