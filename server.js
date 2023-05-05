@@ -41,7 +41,7 @@ function generateRayId(ip, difficulty) {
     const secretChar = process.env.SECRET.charCodeAt(i);
     const ipChar = ip.charCodeAt(i % ip.length);
     const encryptedChar = secretChar ^ ipChar;
-    encryptedSecret += String.fromCharCode(encryptedChar);
+    encryptedSecret += ('0' + encryptedChar.toString(16)).slice(-2);
   }
 
   return encryptedSecret;
@@ -54,7 +54,7 @@ function checkRayId(rayId, ip, difficulty) {
 }
 
 app.get('/verify-ray', async (req, res) => {
-  const userIp = req.ip;
+  const userIp = req.ip || req.headers['x-forwarded-for'];
   const rayId = req.query.ray;
 
   if (checkRayId(rayId, userIp, Difficulty)) {
@@ -67,7 +67,7 @@ app.get('/verify-ray', async (req, res) => {
 
 
 app.use(async (req, res, next) => {
-  const userIp = req.ip;
+  const userIp = req.ip || req.headers['x-forwarded-for'];
   const isWhitelisted = req.session.whitelisted;
 
   if (isWhitelisted) {

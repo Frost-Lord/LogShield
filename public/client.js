@@ -5,8 +5,8 @@ function sleep(ms) {
 async function calculateNonce(rayId, userIp) {
   let secret = '';
 
-  for (let i = 0; i < rayId.length; i++) {
-    const encryptedChar = rayId.charCodeAt(i);
+  for (let i = 0; i < rayId.length / 2; i++) {
+    const encryptedChar = parseInt(rayId.slice(i * 2, i * 2 + 2), 16);
     const ipChar = userIp.charCodeAt(i % userIp.length);
     const decryptedChar = encryptedChar ^ ipChar;
     secret += String.fromCharCode(decryptedChar);
@@ -29,7 +29,9 @@ async function submitResult(nonce) {
     const redirectingElement = document.getElementById('redirecting');
 
     const nonce = await calculateNonce(secret, userIp, Difficulty);
+    await sleep(3000);
     calculatingNonceElement.textContent = 'Calculating Nonce: ✓';
+    await sleep(2000);
     submittingResultElement.textContent = 'Submitting Result: ✓';
 
     const isResultAccepted = await submitResult(nonce);
@@ -38,6 +40,7 @@ async function submitResult(nonce) {
       await sleep(5000);
       window.location.reload();
     } else {
+      redirectingElement.textContent = 'Redirecting: ✗';
       submittingResultElement.textContent = 'Submitting Result: ✗';
     }
   });

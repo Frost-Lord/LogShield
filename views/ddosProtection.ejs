@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DDoS Protection</title>
+  <title>LogShield</title>
   <link rel="stylesheet" href="/styles.css">
   <script>
     const Difficulty = "<%= Difficulty %>";
@@ -17,34 +17,39 @@
 <body>
   <div class="header">
     <h2>LogShield</h2>
-    <p>Checking your browser before accessing <span id="domain">example.com</span></p>
+    <p>Checking your browser before accessing <span id="domain"></span><br><p style="font-size: 14px;">Ray ID: <%= secret %></p></p>
   </div>
   
   <div class="container">
     <div class="column">
-      <img src="ip_image.png" alt="IP Image">
+      <img src="images/img1.png" alt="IP Image">
       <p>You</p>
-      <p>IP: 110168.31.25</p>
+      <p>IP: <%= userIp %></p>
     </div>
     <div class="column">
-      <img src="logshield_image.png" alt="LogShield Image">
+      <img src="images/img2.png" alt="LogShield Image">
       <p>LogShield</p>
       <p>Edge Network</p>
     </div>
     <div class="column">
-      <img src="destination_image.png" alt="Destination Image">
-      <p>example.com</p>
+      <img src="images/img3.png" alt="Destination Image">
+      <p id="destinationDomain"></p>
       <p>Your destination</p>
     </div>
   </div>
   
   <div class="footer">
-    <p>DDoS Protected By LogShield</p>
-    <p>Ray ID: <span id="rayId"><%= secret %></span></p>
+    <p>DDOS Protected By LogShield</p>
+    <br>
     <p>Calculating Nonce: <span id="calculatingNonce">...</span></p>
     <p>Submitting Result: <span id="submittingResult">...</span></p>
     <p>Redirecting: <span id="redirecting">...</span></p>
   </div>
+
+  <script>
+    document.getElementById("domain").textContent = window.location.hostname;
+    document.getElementById("destinationDomain").textContent = window.location.hostname;
+  </script>
 </body>
 
 </html>
