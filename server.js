@@ -71,7 +71,7 @@ app.use(async (req, res, next) => {
   const isWhitelisted = req.session.whitelisted;
 
   if (isWhitelisted) {
-    next();
+    //next();
     console.log('Whitelisted IP:', userIp);
   } else {
     const secret = generateRayId(req.ip);
