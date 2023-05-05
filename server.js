@@ -120,7 +120,7 @@ app.use(async (req, res, next) => {
     //next();
   } else {
     const secret = generateRayId(req.ip);
-    res.render('ddosProtection', { req, secret, Difficulty, userIp: userIp });
+    res.render('ddosProtection', { req, secret, sub: secret.substring(0, 25), Difficulty, userIp: userIp });
   }
 });
 
