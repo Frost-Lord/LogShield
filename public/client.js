@@ -28,13 +28,14 @@ async function submitResult(nonce) {
     const submittingResultElement = document.getElementById('submittingResult');
     const redirectingElement = document.getElementById('redirecting');
 
-    const nonce = await calculateNonce(secret, userIp);
+    const nonce = await calculateNonce(secret, userIp, Difficulty);
     calculatingNonceElement.textContent = 'Calculating Nonce: ✓';
+    submittingResultElement.textContent = 'Submitting Result: ✓';
 
     const isResultAccepted = await submitResult(nonce);
     if (isResultAccepted) {
       redirectingElement.textContent = 'Redirecting: ✓';
-      await sleep(3000);
+      await sleep(5000);
       window.location.reload();
     } else {
       submittingResultElement.textContent = 'Submitting Result: ✗';
