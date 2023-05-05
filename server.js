@@ -1,5 +1,9 @@
 const express = require('express');
 const { createProxyMiddleware } = require('http-proxy-middleware');
+const { rateLimit, trackNonceRequests } = require('./rateLimiter');
+const evaluateAccessLog = require('./evaluate');
+const train = require('./train'); 
+const logger = require('./logger');
 const session = require('express-session');
 const path = require('path');
 const app = express();
@@ -24,6 +28,7 @@ app.use(
 // Session configuration
 app.use(
   session({
+    key: 'logshield',
     secret: 'sg809psargae9pr8gaertgheho9ar8g',
     resave: false,
     saveUninitialized: true,
@@ -33,15 +38,16 @@ app.use(
 
 const banningRoutes = require('./routes/banning');
 const verifyRoutes = require('./routes/verify');
-const evaluateAccessLog = require('./evaluate');
-const train = require('./train'); 
+const wafMiddleware = require('./routes/wafRules');
 
 const { router: banningRouter, isBanned } = banningRoutes;
 const { router: verifyRouter, generateRayId } = verifyRoutes;
 
 app.use(runcheck);
 app.use(banningRouter);
+app.use(wafMiddleware);
 app.use(verifyRouter);
+app.use(rateLimit({ limit: 30, resetInterval: 60 * 1000, blockDuration: 2 * 60 * 1000 }));
 
 // Proxy configuration
 const Difficulty = process.env.DIFFICULTY || 4;
@@ -57,7 +63,7 @@ function checkAuth(req, res, next) {
 }
 
 
-app.get('/evaluate', checkAuth, async (req, res) => {
+app.get('/evaluate', checkAuth, trackNonceRequests, async (req, res) => {
   try {
     await evaluateAccessLog()
     .then(maliciousUsers => {
@@ -82,7 +88,7 @@ app.get('/evaluate', checkAuth, async (req, res) => {
   }
 });
 
-app.get('/train', checkAuth, async (req, res) => {
+app.get('/train', checkAuth, trackNonceRequests, async (req, res) => {
     try {
         await train()
         .then(data => {
@@ -107,16 +113,15 @@ async function runcheck(req, res, next) {
       await axios.get(process.env.TARGETURL);
       next();
     } catch (error) {
-      res.render('badGateway', { userIp });
+      res.render('badGateway', trackNonceRequests, { userIp });
     }
   }
 }
 
 app.use(async (req, res, next) => {
   const userIp = req.ip || req.headers['x-forwarded-for'];
-  const isWhitelisted = req.session.whitelisted;
 
-  if (isWhitelisted) {
+  if (req.session.whitelisted) {
     //next();
   } else {
     const secret = generateRayId(req.ip);
@@ -129,9 +134,10 @@ app.use(
   createProxyMiddleware({
     target: process.env.TARGETURL,
     changeOrigin: true,
+    ws: true,
   })
 );
 
 app.listen(process.env.PORT, () => {
-  console.log(`Proxy server listening at http://localhost:${process.env.PORT}`);
+  logger.success("Event", `Proxy server listening at http://localhost:${process.env.PORT}`)
 });

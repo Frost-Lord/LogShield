@@ -2,8 +2,8 @@ const nonceRequests = new Map();
 
 const rateLimit = (options = {}) => {
   const limit = options.limit || 30;
-  const resetInterval = options.resetInterval || 60 * 1000;
-  const blockDuration = options.blockDuration || 2 * 60 * 1000;
+  const resetInterval = options.resetInterval || 60 * 1000; // 1 minute
+  const blockDuration = options.blockDuration || 2 * 60 * 1000; // 2 minutes
   const nonceLimit = options.nonceLimit || 10;
   const nonceWindow = options.nonceWindow || 5 * 1000; // 5 seconds
   const ipRequests = new Map();

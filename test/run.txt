@@ -1,0 +1,1 @@
+k6 run --quiet k6-test-script.js -e VUS=64 -e DURATION=60s -e HTTP_METHOD=GET -e TARGET=http://localhost:7000
