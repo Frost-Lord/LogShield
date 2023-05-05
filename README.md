@@ -1,6 +1,10 @@
 # LogShield
 LogShield is a machine learning project that uses TensorFlow.js to detect malicious activity in web server access logs. It can be used to protect your web server from malitious users.
 
+<p align="center">
+    <img src="./display.png">
+</p>
+
 ## How it works
 LogShield uses a neural network model to analyze access logs and predict whether each user is malicious or legitimate based on their IP address, request method, response status code, and bytes sent. The model is trained on a combination of legitimate and malicious access logs, and can be retrained on new data to improve its accuracy.
 

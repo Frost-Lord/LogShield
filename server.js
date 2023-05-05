@@ -27,12 +27,14 @@ app.use(
     secret: 'sg809psargae9pr8gaertgheho9ar8g',
     resave: false,
     saveUninitialized: true,
-    cookie: { maxAge: 15 * 60 * 1000 }, // 15 minutes
+    cookie: { maxAge: 30 * 60 * 1000 }, // 30 minutes
   })
 );
 
 const banningRoutes = require('./routes/banning');
 const verifyRoutes = require('./routes/verify');
+const evaluateAccessLog = require('./evaluate');
+const train = require('./train'); 
 
 const { router: banningRouter, isBanned } = banningRoutes;
 const { router: verifyRouter, generateRayId } = verifyRoutes;
@@ -43,6 +45,57 @@ app.use(verifyRouter);
 
 // Proxy configuration
 const Difficulty = process.env.DIFFICULTY || 4;
+
+function checkAuth(req, res, next) {
+  const authCode = req.query.auth;
+
+  if (authCode === '12345') {
+    next();
+  } else {
+    res.status(401).send('Unauthorized');
+  }
+}
+
+
+app.get('/evaluate', checkAuth, async (req, res) => {
+  try {
+    await evaluateAccessLog()
+    .then(maliciousUsers => {
+      if (maliciousUsers.length === 0) {
+        res.send('No malicious users detected.');
+      } else {
+        let mal = [];
+        maliciousUsers.forEach(user => {
+          if (mal.includes(user.ip) === false) {
+            mal.push(user.ip);
+          }
+        });
+        res.send(`Malicious users detected: ${mal}`);
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).send('An error occurred while evaluating the access log.');
+    });
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
+app.get('/train', checkAuth, async (req, res) => {
+    try {
+        await train()
+        .then(data => {
+            res.json(data);
+        })
+        .catch(err => {
+          console.error(err);
+          res.status(500).send('An error occurred while training the model.');
+        });
+      } catch (err) {
+        res.status(500).send(err.message);
+      }
+});
 
 async function runcheck(req, res, next) {
   const userIp = req.ip || req.headers['x-forwarded-for'];
