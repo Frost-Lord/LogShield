@@ -1,9 +1,9 @@
 const express = require('express');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const session = require('express-session');
-const crypto = require('crypto');
 const path = require('path');
 const app = express();
+const axios = require('axios');
 require("dotenv").config();
 
 app.use(express.urlencoded({ extended: false }));
@@ -13,6 +13,7 @@ app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname, "/public")));
 app.set("views", __dirname + "/views");
 app.use(express.json());
+app.use(runcheck);
 app.use(
   express.urlencoded({
     extended: true,
@@ -33,6 +34,26 @@ const port = 7000;
 const targetPort = 7248;
 const targetUrl = `http://localhost:${targetPort}`;
 const Difficulty = 4;
+const bannedIPs = [];
+
+function isBanned(ip) {
+  return bannedIPs.includes(ip);
+}
+
+async function runcheck(req, res, next) {
+  const userIp = req.ip || req.headers['x-forwarded-for'];
+
+  if (isBanned(userIp)) {
+    res.render('banned', { userIp });
+  } else {
+    try {
+      await axios.get(targetUrl);
+      next();
+    } catch (error) {
+      res.render('badGateway', { userIp });
+    }
+  }
+}
 
 function generateRayId(ip, difficulty) {
   let encryptedSecret = '';
@@ -72,11 +93,9 @@ app.use(async (req, res, next) => {
 
   if (isWhitelisted) {
     //next();
-    console.log('Whitelisted IP:', userIp);
   } else {
     const secret = generateRayId(req.ip);
-    res.render('ddosProtection', { req, secret, Difficulty, userIp: req.ip });
-    console.log('Non-whitelisted IP:', userIp);
+    res.render('ddosProtection', { req, secret, Difficulty, userIp: userIp });
   }
 });
 

@@ -16,35 +16,42 @@
 
 <body>
   <div class="header">
+    <img src="images/logo.png" alt="LogShield Logo" class="logo">
     <h2>LogShield</h2>
-    <p>Checking your browser before accessing <span id="domain"></span><br><p style="font-size: 14px;">Ray ID: <%= secret %></p></p>
+    <br>
   </div>
-  
+  <p>Checking your browser before accessing <span id="domain"></span><br>
+  <p style="font-size: 14px;">Ray ID: <%= secret %>
+  </p>
+  </p>
   <div class="container">
     <div class="column">
       <img src="images/img1.png" alt="IP Image">
-      <p>You</p>
-      <p>IP: <%= userIp %></p>
+      <p class="main">You</p>
+      <p class="sub">IP: <%= userIp %>
+      </p>
     </div>
+    <img src="images/arrow.png" alt="Arrow" class="arrow">
     <div class="column">
       <img src="images/img2.png" alt="LogShield Image">
-      <p>LogShield</p>
-      <p>Edge Network</p>
+      <p class="main">LogShield</p>
+      <p class="sub">Edge Network</p>
     </div>
+    <img src="images/arrow.png" alt="Arrow" class="arrow">
     <div class="column">
       <img src="images/img3.png" alt="Destination Image">
-      <p id="destinationDomain"></p>
-      <p>Your destination</p>
+      <p id="destinationDomain" class="main"></p>
+      <p class="sub">Your destination</p>
     </div>
   </div>
-  
-  <div class="footer">
+
+  <div class="footer centered-footer">
     <p>DDOS Protected By LogShield</p>
     <br>
     <p>Calculating Nonce: <span id="calculatingNonce">...</span></p>
     <p>Submitting Result: <span id="submittingResult">...</span></p>
     <p>Redirecting: <span id="redirecting">...</span></p>
-  </div>
+  </div>  
 
   <script>
     document.getElementById("domain").textContent = window.location.hostname;

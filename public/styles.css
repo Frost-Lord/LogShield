@@ -7,11 +7,19 @@ body {
   flex-direction: column;
   align-items: center;
   height: 100vh;
+  font-weight: bold;
+}
+
+.logo {
+  height: 50px;
+  margin-right: 8px;
 }
 
 .header {
-  text-align: center;
-  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
 }
 
 .container {
@@ -25,10 +33,34 @@ body {
   margin-bottom: 20px;
 }
 
+.arrow {
+  height: 52px;
+  vertical-align: middle; 
+  align-self: center;
+}
+
+.cross {
+  height: 52px;
+  vertical-align: middle; 
+  align-self: center;
+}
+
 .column {
   flex: 1;
   text-align: center;
   margin: 0 10px;
+}
+
+.main {
+  color: #c3c7d2;
+  font-size: 26px;
+  font-weight: bold;
+}
+
+.sub {
+  color: #e47f56;
+  font-size: 16px;
+  font-weight: bold;
 }
 
 .column img {
@@ -38,7 +70,7 @@ body {
 }
 
 h2 {
-  font-size: 40px;
+  font-size: 44px;
   color: #ffffff;
   text-transform: uppercase;
   font-weight: bold;
@@ -53,7 +85,37 @@ p {
 }
 
 .footer {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+}
+
+.centered-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.footer-category {
   text-align: center;
+  padding: 0 10px;
+  max-width: 350px;
+}
+
+.footer-title {
+  font-weight: bold;
+  font-size: 28px;
+  color: #ffffff;
+  margin: 10px 0;
+}
+
+.footer-text {
+  margin: 0 0 10px 0;
+  color: #c3c7d2;
+  line-height: 1.5;
+  word-wrap: break-word;
 }
 
 span {
