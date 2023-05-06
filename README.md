@@ -8,7 +8,7 @@ LogShield is a machine learning project that uses TensorFlow.js to detect malici
 
 ## How it works
 
-# Middleware
+# Middleware:
 
 LogShield also includes a rate limiter feature to prevent abuse of the web server by limiting the number of requests from a single IP address within a specified time period. The rate limiter uses Redis as a storage backend to keep track of the number of requests made by each IP address.
 
@@ -21,28 +21,30 @@ The rate limiter can be configured with the following options:
 . nonceWindow: the time period in milliseconds after which the nonce count for an IP address should be reset (default: 5 seconds).
 
 Mass GET requests (3817)
+
 ```powershell
-     checks.........................: 0.26%  ✓ 10        ✗ 3817
-     data_received..................: 1.8 MB 29 kB/s
-     data_sent......................: 429 kB 7.0 kB/s
-     http_req_blocked...............: avg=56.39µs min=0s      med=0s      max=4.27ms  p(90)=0s      p(95)=0s
-     http_req_connecting............: avg=25.97µs min=0s      med=0s      max=3.01ms  p(90)=0s      p(95)=0s
-     http_req_duration..............: avg=12.73ms min=1.52ms  med=11.05ms max=66.48ms p(90)=23.5ms  p(95)=25.53ms
-       { expected_response:true }...: avg=61.43ms min=57.89ms med=58.89ms max=66.48ms p(90)=66.48ms p(95)=66.48ms
-     http_req_failed................: 99.73% ✓ 3817      ✗ 10
-     http_req_receiving.............: avg=4.34ms  min=0s      med=3.66ms  max=19.72ms p(90)=8.08ms  p(95)=10.99ms
-     http_req_sending...............: avg=5.12µs  min=0s      med=0s      max=1ms     p(90)=0s      p(95)=0s
-     http_req_tls_handshaking.......: avg=0s      min=0s      med=0s      max=0s      p(90)=0s      p(95)=0s
-     http_req_waiting...............: avg=8.39ms  min=502.4µs med=7.18ms  max=65.05ms p(90)=14.49ms p(95)=19.3ms
-     http_reqs......................: 3827   62.710117/s
-     iteration_duration.............: avg=1.01s   min=1s      med=1.01s   max=1.06s   p(90)=1.02s   p(95)=1.02s
-     iterations.....................: 3827   62.710117/s
-     vus............................: 41     min=41      max=64
-     vus_max........................: 64     min=64      max=64
+checks.........................: 0.26%  ✓ 10        ✗ 3817
+data_received..................: 1.8 MB 29 kB/s
+data_sent......................: 429 kB 7.0 kB/s
+http_req_blocked...............: avg=56.39µs min=0s      med=0s      max=4.27ms  p(90)=0s      p(95)=0s
+http_req_connecting............: avg=25.97µs min=0s      med=0s      max=3.01ms  p(90)=0s      p(95)=0s
+http_req_duration..............: avg=12.73ms min=1.52ms  med=11.05ms max=66.48ms p(90)=23.5ms  p(95)=25.53ms
+  { expected_response:true }...: avg=61.43ms min=57.89ms med=58.89ms max=66.48ms p(90)=66.48ms p(95)=66.48ms
+http_req_failed................: 99.73% ✓ 3817      ✗ 10
+http_req_receiving.............: avg=4.34ms  min=0s      med=3.66ms  max=19.72ms p(90)=8.08ms  p(95)=10.99ms
+http_req_sending...............: avg=5.12µs  min=0s      med=0s      max=1ms     p(90)=0s      p(95)=0s
+http_req_tls_handshaking.......: avg=0s      min=0s      med=0s      max=0s      p(90)=0s      p(95)=0s
+http_req_waiting...............: avg=8.39ms  min=502.4µs med=7.18ms  max=65.05ms p(90)=14.49ms p(95)=19.3ms
+http_reqs......................: 3827   62.710117/s
+iteration_duration.............: avg=1.01s   min=1s      med=1.01s   max=1.06s   p(90)=1.02s   p(95)=1.02s
+iterations.....................: 3827   62.710117/s
+vus............................: 41     min=41      max=64
+vus_max........................: 64     min=64      max=64
 ```
+
 Blocked 99.73% of 3817 requests
 
-# AI
+# AI:
 
 LogShield uses a neural network model to analyze access logs and predict whether each user is malicious or legitimate based on their IP address, request method, response status code, and bytes sent. The model is trained on a combination of legitimate and malicious access logs, and can be retrained on new data to improve its accuracy.
 
