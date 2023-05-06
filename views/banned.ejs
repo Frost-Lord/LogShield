@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Banned | LogShield</title>
-<link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/styles.css">
 </head>
 
 <body>
@@ -40,7 +40,11 @@
         <p>DDOS Protected By LogShield</p>
         <br>
         <p>Please contact the site administrator if you believe this ban is in error.</p>
-    </div> 
+    </div>
+
+    <script>
+        document.getElementById("destinationDomain").textContent = window.location.hostname;
+    </script>
 </body>
 
 </html>

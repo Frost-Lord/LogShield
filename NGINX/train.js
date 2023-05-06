@@ -14,8 +14,8 @@ function readLogs(dir) {
 
     return logDataArray;
 }
-const accessLogDataArray = readLogs('./Train/normal');
-const maliciousLogDataArray = readLogs('./Train/malicious');
+const accessLogDataArray = readLogs('./NGINX/Train/normal');
+const maliciousLogDataArray = readLogs('./NGINX/Train/malicious');
 
 function parseNginxLogs(logData) {
     const logs = logData.split('\n');

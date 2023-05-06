@@ -6,7 +6,7 @@ const info = (name, message) =>
 
 
 const debug = (name, message) =>
-    console.log(clc.green(`${"[DEBUG]"} [${name}] => `) + clc.yellow(message));
+    console.log(clc.green(`${"[LOGSHIELD]"} [${name}] => `) + clc.yellow(message));
 
 
 const error = (name, message) =>
@@ -16,10 +16,21 @@ const error = (name, message) =>
 const success = (name, message) =>
     console.log(clc.green(`${"[NODE]"} [${name}] => `) + clc.green(message));
 
+//Database
+
+const warn = (name, message) =>
+	console.log(clc.green(`${"[DATABASE]"} [${name}] => `) + clc.green(message));
+
+//User
+
+const user = (name, message) =>
+	console.log(clc.green(`${"[USER]"} [${name}] => `) + clc.yellow(message));
 
 module.exports = {
 	info,
 	debug,
 	error,
 	success,
+	warn,
+	user,
 };

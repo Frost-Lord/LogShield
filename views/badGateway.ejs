@@ -14,7 +14,7 @@
         <h2>Bad Gateway</h2>
         <br>
     </div>
-    <p>There was a problem connecting to the origin  server. Please try again later.</p>
+    <p>There was a problem connecting to the origin server. Please try again later.</p>
     <div class="container">
         <div class="column">
             <img src="images/img1.png" alt="IP Image">
@@ -40,16 +40,19 @@
         <div class="footer-category">
             <h4 class="footer-title">What happened?</h4>
             <br>
-            <p class="footer-text">There was a problem that occurred while connecting to <span id="hostname-placeholder">origin server</span> origin server. The server hosting the website might be unavailable.</p>
+            <p class="footer-text">There was a problem that occurred while connecting to <span
+                    id="hostname-placeholder">origin server</span> origin server. The server hosting the website might
+                be unavailable.</p>
         </div>
         <div class="footer-category">
             <h4 class="footer-title">What can I do?</h4>
             <br>
-            <p class="footer-text">If you are a visitor, please try again in a few minutes. If you are the administrator, please check your origin server or contact LogShield for further assistance.</p>
+            <p class="footer-text">If you are a visitor, please try again in a few minutes. If you are the
+                administrator, please check your origin server or contact LogShield for further assistance.</p>
         </div>
     </div>
 
-    <script>    
+    <script>
         document.getElementById("destinationDomain").textContent = window.location.hostname;
         document.getElementById('hostname-placeholder').textContent = window.location.hostname;
     </script>

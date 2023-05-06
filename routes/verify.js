@@ -1,4 +1,5 @@
 const express = require('express');
+const logger = require('../utils/logger');
 const router = express.Router();
 
 function generateRayId(ip) {
@@ -15,7 +16,7 @@ function generateRayId(ip) {
 }
 
 function checkRayId(rayId, ip) {
-    console.log('Expected Ray ID:', process.env.SECRET, 'Received Ray ID:', rayId);
+    logger.debug('RAY CHECK', `${ip} has requested to verify Ray ID: ${rayId === process.env.SECRET}`);
     return rayId === process.env.SECRET;
 }
 

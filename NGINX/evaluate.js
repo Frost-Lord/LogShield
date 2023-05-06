@@ -6,7 +6,7 @@ async function loadModel() {
     return model;
 }
 
-const accessLogData = fs.readFileSync('./Train/test/access.log', 'utf8');
+const accessLogData = fs.readFileSync('./NGINX/Train/test/access.log', 'utf8');
 
 function parseNginxLogs(logData) {
     const logs = logData.split('\n');

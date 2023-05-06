@@ -30,7 +30,7 @@ async function submitResult(nonce) {
 
     const nonce = await calculateNonce(secret, userIp, Difficulty);
     await sleep(3000);
-    calculatingNonceElement.textContent = 'Calculating Nonce: ✓';
+    calculatingNonceElement.textContent = 'Calculating Ray: ✓';
     await sleep(2000);
     submittingResultElement.textContent = 'Submitting Result: ✓';
 

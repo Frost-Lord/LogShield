@@ -1,14 +1,27 @@
 const express = require('express');
 const { createProxyMiddleware } = require('http-proxy-middleware');
-const { rateLimit, trackNonceRequests } = require('./rateLimiter');
-const evaluateAccessLog = require('./evaluate');
-const train = require('./train'); 
-const logger = require('./logger');
+const evaluateAccessLog = require('./NGINX/evaluate');
+const train = require('./NGINX/train'); 
+const logger = require('./utils/logger');
 const session = require('express-session');
 const path = require('path');
 const app = express();
 const axios = require('axios');
 require("dotenv").config();
+const redis = require('redis');
+const client = global.client = redis.createClient({
+  username: 'default',
+  password: 'qVFxATVuYmGMwJRengkJYm1Z0cz9V8bi',
+  socket: {
+      host: 'redis-15979.c11.us-east-1-3.ec2.cloud.redislabs.com',
+      port: 15979
+  }
+});
+client.on('error', err => console.log('Redis Client Error', err));
+client.on("ready", () => { logger.success("Event", "Redis client ready"); });
+client.on("reconnecting", () => { logger.warn("Event", "Redis client reconnecting"); });
+client.on("end", () => { logger.warn("Event", "Redis client connection ended"); });
+client.connect();
 
 // Express configuration
 app.use(express.urlencoded({ extended: false }));
@@ -36,18 +49,16 @@ app.use(
   })
 );
 
-const banningRoutes = require('./routes/banning');
 const verifyRoutes = require('./routes/verify');
-const wafMiddleware = require('./routes/wafRules');
+const wafMiddleware = require('./middleware/wafRules');
+const rateLimit = require('./middleware/rateLimiter');
 
-const { router: banningRouter, isBanned } = banningRoutes;
 const { router: verifyRouter, generateRayId } = verifyRoutes;
 
+app.use(rateLimit({ limit: 30, resetInterval: 60 * 1000, blockDuration: 2 * 60 * 1000 }));
 app.use(runcheck);
-app.use(banningRouter);
 app.use(wafMiddleware);
 app.use(verifyRouter);
-app.use(rateLimit({ limit: 30, resetInterval: 60 * 1000, blockDuration: 2 * 60 * 1000 }));
 
 // Proxy configuration
 const Difficulty = process.env.DIFFICULTY || 4;
@@ -55,15 +66,14 @@ const Difficulty = process.env.DIFFICULTY || 4;
 function checkAuth(req, res, next) {
   const authCode = req.query.auth;
 
-  if (authCode === '12345') {
+  if (authCode === 'aielgv8sgeasgryleairgearihu') {
     next();
   } else {
     res.status(401).send('Unauthorized');
   }
 }
 
-
-app.get('/evaluate', checkAuth, trackNonceRequests, async (req, res) => {
+app.get('/evaluate', checkAuth, async (req, res, next) => {
   try {
     await evaluateAccessLog()
     .then(maliciousUsers => {
@@ -88,7 +98,7 @@ app.get('/evaluate', checkAuth, trackNonceRequests, async (req, res) => {
   }
 });
 
-app.get('/train', checkAuth, trackNonceRequests, async (req, res) => {
+app.get('/train', checkAuth, async (req, res) => {
     try {
         await train()
         .then(data => {
@@ -106,15 +116,12 @@ app.get('/train', checkAuth, trackNonceRequests, async (req, res) => {
 async function runcheck(req, res, next) {
   const userIp = req.ip || req.headers['x-forwarded-for'];
 
-  if (isBanned(userIp)) {
-    res.render('banned', { userIp });
-  } else {
-    try {
-      await axios.get(process.env.TARGETURL);
-      next();
-    } catch (error) {
-      res.render('badGateway', trackNonceRequests, { userIp });
-    }
+  try {
+    await axios.get(process.env.TARGETURL);
+    next();
+  } catch (error) {
+    res.render('badGateway', { userIp });
+    return;
   }
 }
 
