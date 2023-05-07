@@ -55,7 +55,7 @@ const rateLimit = require('./middleware/rateLimiter');
 
 const { router: verifyRouter, generateRayId } = verifyRoutes;
 
-app.use(rateLimit({ limit: 30, resetInterval: 60 * 1000, blockDuration: 2 * 60 * 1000 }));
+app.use(rateLimit({ limit: 10, resetInterval: 60 * 1000, blockDuration: 2 * 60 * 1000 }));
 app.use(runcheck);
 app.use(wafMiddleware);
 app.use(verifyRouter);

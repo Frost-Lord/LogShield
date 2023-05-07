@@ -3,7 +3,7 @@ param (
     $duration = 60
 )
 
-$connectionCounts = @(64, 128, 256, 512, 1024, 2048, 4096)
+$connectionCounts = @(64, 128, 256, 512, 1024, 2048, 4096, 80000000)
 
 echo "============================================="
 echo "========== Stress Testing Mass GET =========="
