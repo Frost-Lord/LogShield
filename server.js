@@ -24,9 +24,8 @@ if (cluster.isPrimary) {
   createServer();
   setTimeout(() => {
     global.disableLogs = false;
+    logger.worker("Event", `Worker ${process.pid} started`);
   }, 5000);
-  logger.worker("Event", `Worker ${process.pid} started`);
-  console.log(`Worker ${process.pid} started`);
 }
 
 async function createServer() {
@@ -169,7 +168,7 @@ app.use(async (req, res, next) => {
   const userIp = req.ip || req.headers['x-forwarded-for'];
 
   if (req.session.whitelisted) {
-    //next();
+    next();
   } else {
     const secret = generateRayId(req.ip);
     res.render('ddosProtection', { req, secret, sub: secret.substring(0, 25), Difficulty, userIp: userIp });
