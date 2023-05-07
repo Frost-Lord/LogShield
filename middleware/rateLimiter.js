@@ -1,7 +1,25 @@
+const { data } = require('@tensorflow/tfjs-node');
 const logger = require('../utils/logger');
 const client = global.client;
 const ipRequests = new Map();
-let totalBlocked = new Map();
+const totalBlocked = new Map();
+const totalrpm = {
+  "allowedrpm": {
+    "total": 0,
+    "time": Date.now(),
+    "last": null,
+  },
+  "blockedrpm": {
+    "total": 0,
+    "time": Date.now(),
+    "last": null,
+  },
+  "totalrpm": {
+    "total": 0,
+    "time": Date.now(),
+    "last": null,
+  },
+}
 
 const whitelisted = (process.env.WHITELISTED || '').split(',').map(ip => ip.trim()).filter(ip => ip.length > 0);
 
@@ -36,11 +54,15 @@ const rateLimit = (options = {}) => {
     const ip = req.ip;
 
     if (whitelisted.includes(ip)) {
-      console.log(`IP address ${ip} is whitelisted`);
       return next();
     }
 
     async function redirect(req, res, userIp) {
+      totalrpm.blockedrpm.total++;
+      totalrpm.blockedrpm.last = Date.now();
+      totalrpm.totalrpm.total++;
+      totalrpm.totalrpm.last = Date.now();
+
       const today = new Date().toISOString().split('T')[0];
       totalBlocked.set(today, (totalBlocked.get(today) || 0) + 1);
       const ipData = ipRequests.get(userIp);
@@ -99,6 +121,10 @@ const trackNonceRequests = async (req, res, next, nonceLimit, nonceWindow) => {
       console.error(err);
       return next(err);
     });
+    totalrpm.allowedrpm.total++;
+    totalrpm.allowedrpm.last = Date.now();
+    totalrpm.totalrpm.total++;
+    totalrpm.totalrpm.last = Date.now();
     next();
   }).catch((err) => {
     console.error(err);
@@ -121,9 +147,50 @@ function CurrentlyBlockedUsers() {
   return { "current": blockedUsers, "reqests": totalRequests };
 }
 
+setInterval(() => {
+
+}, 60000);
+
 function Totalblocked() {
   return totalBlocked;
 }
 
+function Totalrpm() {
+  const now = Date.now();
+  const start = now - 60000;
+  let allowed = 0;
+  let blocked = 0;
+  let total = 0;
+
+  console.log(totalrpm);
+
+  if (totalrpm.hasOwnProperty('allowedrpm')) {
+    for (const [key, value] of Object.entries(totalrpm.allowedrpm)) {
+      if (value.time >= start && value.time <= now) {
+        allowed += value.total;
+      }
+    }
+  }
+
+  if (totalrpm.hasOwnProperty('blockedrpm')) {
+    for (const [key, value] of Object.entries(totalrpm.blockedrpm)) {
+      if (value.time >= start && value.time <= now) {
+        blocked += value.total;
+      }
+    }
+  }
+
+  if (totalrpm.hasOwnProperty('totalrpm')) {
+    for (const [key, value] of Object.entries(totalrpm.totalrpm)) {
+      if (value.time >= start && value.time <= now) {
+        total += value.total;
+      }
+    }
+  }
+
+  return { allowedrpm: allowed, blockedrpm: blocked, totalrpm: total };
+}
+
+
 module.exports = rateLimit;
-module.exports.rateLimitData = { CurrentlyBlockedUsers, Totalblocked };
+module.exports.rateLimitData = { CurrentlyBlockedUsers, Totalblocked, Totalrpm };

@@ -21,6 +21,7 @@
     "fs": "^0.0.1-security",
     "http-proxy-middleware": "^2.0.6",
     "path": "^0.12.7",
+    "pidusage": "^3.0.2",
     "redis": "^4.6.6"
   }
 }
