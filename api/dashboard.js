@@ -8,8 +8,6 @@ module.exports = (router, client, checkAuth) => {
     router.post("/admin", checkAuth, async (req, res) => {
         const processStats = await pidusage(process.pid);
 
-        console.log(Totalrpm);
-
         const data = {
             "waf": {
                 "totalwafblocked": totalwafblocked()
@@ -17,6 +15,17 @@ module.exports = (router, client, checkAuth) => {
             "rateLimit": {
                 "CurrentlyBlockedUsers": CurrentlyBlockedUsers(),
                 "Totalblocked": Object.fromEntries(Totalblocked().entries()),
+            },
+            "rpm": {
+                "requestsPerMinute": {
+                    "total": Totalrpm().allowedrpm,
+                    "allowed": Totalrpm().allowedrpm,
+                    "blocked": Totalrpm().blockedrpm,
+                }
+            },
+            "process": {
+                "memoryUsage": processStats.memory,
+                "cpuUsage": processStats.cpu,
             },
             "system": {
                 "uptime": os.uptime(),
@@ -26,17 +35,6 @@ module.exports = (router, client, checkAuth) => {
                 "cpus": os.cpus(),
                 "networkInterfaces": os.networkInterfaces(),
             },
-            "process": {
-                "memoryUsage": processStats.memory, // Memory usage in bytes
-                "cpuUsage": processStats.cpu, // CPU usage in percentage
-                "networkStats": {
-                    "downSpeed": processStats.rx, // Network download speed in bytes/sec
-                    "upSpeed": processStats.tx, // Network upload speed in bytes/sec
-                },
-            },
-            "metrics": {
-                "requestsPerMinute": Totalrpm(),
-            }
         }
 
         res.send(data);

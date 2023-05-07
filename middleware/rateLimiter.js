@@ -3,23 +3,12 @@ const logger = require('../utils/logger');
 const client = global.client;
 const ipRequests = new Map();
 const totalBlocked = new Map();
-const totalrpm = {
-  "allowedrpm": {
-    "total": 0,
-    "time": Date.now(),
-    "last": null,
-  },
-  "blockedrpm": {
-    "total": 0,
-    "time": Date.now(),
-    "last": null,
-  },
-  "totalrpm": {
-    "total": 0,
-    "time": Date.now(),
-    "last": null,
-  },
-}
+const rpmData = {
+  allowed: [],
+  blocked: [],
+  total: []
+};
+
 
 const whitelisted = (process.env.WHITELISTED || '').split(',').map(ip => ip.trim()).filter(ip => ip.length > 0);
 
@@ -58,10 +47,8 @@ const rateLimit = (options = {}) => {
     }
 
     async function redirect(req, res, userIp) {
-      totalrpm.blockedrpm.total++;
-      totalrpm.blockedrpm.last = Date.now();
-      totalrpm.totalrpm.total++;
-      totalrpm.totalrpm.last = Date.now();
+      rpmData.blocked.push({ timestamp: now, count: 1 });
+      rpmData.total.push({ timestamp: now, count: 1 });
 
       const today = new Date().toISOString().split('T')[0];
       totalBlocked.set(today, (totalBlocked.get(today) || 0) + 1);
@@ -76,11 +63,21 @@ const rateLimit = (options = {}) => {
     }
 
     if (!ipRequests.has(ip)) {
-      ipRequests.set(ip, { count: 1, lastRequest: now, blockedUntil: 0, totalBlockedRequests: 0 });
+      ipRequests.set(ip, { count: 1, timestamps: [now], lastRequest: now, blockedUntil: 0, totalBlockedRequests: 0 });
     } else {
       const ipData = ipRequests.get(ip);
 
+      ipData.timestamps = ipData.timestamps.filter(timestamp => now - timestamp <= resetInterval);
+
       if (ipData.blockedUntil > now) {
+        redirect(req, res, ip);
+        return;
+      }
+
+      ipData.timestamps.push(now);
+
+      if (ipData.timestamps.length > limit) {
+        ipData.blockedUntil = now + blockDuration;
         redirect(req, res, ip);
         return;
       }
@@ -121,10 +118,8 @@ const trackNonceRequests = async (req, res, next, nonceLimit, nonceWindow) => {
       console.error(err);
       return next(err);
     });
-    totalrpm.allowedrpm.total++;
-    totalrpm.allowedrpm.last = Date.now();
-    totalrpm.totalrpm.total++;
-    totalrpm.totalrpm.last = Date.now();
+    rpmData.allowed.push({ timestamp: now, count: 1 });
+    rpmData.total.push({ timestamp: now, count: 1 });
     next();
   }).catch((err) => {
     console.error(err);
@@ -147,10 +142,6 @@ function CurrentlyBlockedUsers() {
   return { "current": blockedUsers, "reqests": totalRequests };
 }
 
-setInterval(() => {
-
-}, 60000);
-
 function Totalblocked() {
   return totalBlocked;
 }
@@ -158,37 +149,35 @@ function Totalblocked() {
 function Totalrpm() {
   const now = Date.now();
   const start = now - 60000;
-  let allowed = 0;
-  let blocked = 0;
-  let total = 0;
+  let allowedrpm = 0;
+  let blockedrpm = 0;
+  let totalrpm = 0;
 
-  console.log(totalrpm);
-
-  if (totalrpm.hasOwnProperty('allowedrpm')) {
-    for (const [key, value] of Object.entries(totalrpm.allowedrpm)) {
-      if (value.time >= start && value.time <= now) {
-        allowed += value.total;
-      }
+  rpmData.allowed = rpmData.allowed.filter(entry => {
+    if (entry.timestamp >= start && entry.timestamp <= now) {
+      allowedrpm += entry.count;
+      return true;
     }
-  }
+    return false;
+  });
 
-  if (totalrpm.hasOwnProperty('blockedrpm')) {
-    for (const [key, value] of Object.entries(totalrpm.blockedrpm)) {
-      if (value.time >= start && value.time <= now) {
-        blocked += value.total;
-      }
+  rpmData.blocked = rpmData.blocked.filter(entry => {
+    if (entry.timestamp >= start && entry.timestamp <= now) {
+      blockedrpm += entry.count;
+      return true;
     }
-  }
+    return false;
+  });
 
-  if (totalrpm.hasOwnProperty('totalrpm')) {
-    for (const [key, value] of Object.entries(totalrpm.totalrpm)) {
-      if (value.time >= start && value.time <= now) {
-        total += value.total;
-      }
+  rpmData.total = rpmData.total.filter(entry => {
+    if (entry.timestamp >= start && entry.timestamp <= now) {
+      totalrpm += entry.count;
+      return true;
     }
-  }
+    return false;
+  });
 
-  return { allowedrpm: allowed, blockedrpm: blocked, totalrpm: total };
+  return { allowedrpm, blockedrpm, totalrpm };
 }
 
 
