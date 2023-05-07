@@ -1,9 +1,40 @@
+const cluster = require('node:cluster');
+const os = require('node:os');
+const logger = require('./utils/logger');
+
+const numCPUs = os.availableParallelism();
+global.disableLogs = true;
+
+if (cluster.isPrimary) {
+  console.log(`Primary ${process.pid} is running`);
+
+  for (let i = 0; i < numCPUs; i++) {
+    cluster.fork();
+  }
+
+  cluster.on('exit', (worker, code, signal) => {
+    console.log(`worker ${worker.process.pid} died`);
+  });
+} else {
+  if (cluster.isPrimary) {
+    global.disableLogs = false;
+  } else {
+    global.disableLogs = true;
+  }
+  createServer();
+  setTimeout(() => {
+    global.disableLogs = false;
+  }, 5000);
+  logger.worker("Event", `Worker ${process.pid} started`);
+  console.log(`Worker ${process.pid} started`);
+}
+
+async function createServer() {
 const express = require('express');
 const router = express.Router();
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const evaluateAccessLog = require('./NGINX/evaluate');
 const train = require('./NGINX/train'); 
-const logger = require('./utils/logger');
 const session = require('express-session');
 const path = require('path');
 const fs = require('fs');
@@ -157,3 +188,4 @@ app.use(
 app.listen(process.env.PORT, () => {
   logger.success("Event", `Proxy server listening at http://localhost:${process.env.PORT}`)
 });
+}
