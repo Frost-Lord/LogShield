@@ -2,13 +2,13 @@
   "name": "testingddos",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "train": "node ./NGINX/train.js",
     "evaluate": "node ./NGINX/evaluate.js"
   },
-  "author": "",
+  "author": "Frost-Lord",
   "license": "ISC",
   "dependencies": {
     "@tensorflow/tfjs-node": "^4.4.0",
