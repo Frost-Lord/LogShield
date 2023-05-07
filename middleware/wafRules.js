@@ -3,6 +3,7 @@ const logger = require('../utils/logger');
 const router = express.Router();
 const path = require('path');
 const fs = require('fs');
+const totalblocked = 0;
 
 const wafRulesPath = path.join(__dirname, '../WAF/waf-rules.json');
 const wafRules = JSON.parse(fs.readFileSync(wafRulesPath, 'utf8'));
@@ -12,6 +13,7 @@ function checkAgainstWAFRules(value) {
     const regex = new RegExp(rule.reg, 'i');
     if (regex.test(value)) {
       logger.error('WAF', `Rule ${rule.id}: "${rule.cmt}" in category "${rule.type}" has been triggered by request at ${new Date().toISOString()}`);
+      totalblocked++;
       return true;
     }
   }
@@ -29,4 +31,9 @@ router.use((req, res, next) => {
   next();
 });
 
+function totalwafblocked() { 
+  return totalblocked; 
+}
+
 module.exports = router;
+module.exports.wafData = {totalwafblocked};

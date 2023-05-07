@@ -1,10 +1,12 @@
 const express = require('express');
+const router = express.Router();
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const evaluateAccessLog = require('./NGINX/evaluate');
 const train = require('./NGINX/train'); 
 const logger = require('./utils/logger');
 const session = require('express-session');
 const path = require('path');
+const fs = require('fs');
 const app = express();
 const axios = require('axios');
 require("dotenv").config();
@@ -55,7 +57,13 @@ const rateLimit = require('./middleware/rateLimiter');
 
 const { router: verifyRouter, generateRayId } = verifyRoutes;
 
-app.use(rateLimit({ limit: 10, resetInterval: 60 * 1000, blockDuration: 2 * 60 * 1000 }));
+fs.readdirSync("./api").forEach((file) => {
+  app.use("/logshield/api", router);
+  require(`./api/${file}`)(router, client, checkAuth);
+});
+
+app.use(rateLimit({ limit: 1, resetInterval: 60 * 1000, blockDuration: 2 * 60 * 1000 }));
+
 app.use(runcheck);
 app.use(wafMiddleware);
 app.use(verifyRouter);
@@ -72,6 +80,7 @@ function checkAuth(req, res, next) {
     res.status(401).send('Unauthorized');
   }
 }
+
 
 app.get('/evaluate', checkAuth, async (req, res, next) => {
   try {
