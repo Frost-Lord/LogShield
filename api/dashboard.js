@@ -1,5 +1,7 @@
 const { CurrentlyBlockedUsers, Totalblocked, Totalrpm } = require('../middleware/rateLimiter').rateLimitData;
 const { totalwafblocked } = require('../middleware/wafRules').wafData;
+const { AVGServerPing } = require('../middleware/ping');
+const {bandwidth} = require('../middleware/bandwidth').bandwidth
 const os = require('node:os');
 const pidusage = require('pidusage');
 
@@ -16,6 +18,13 @@ module.exports = (router, client, checkAuth) => {
                 "CurrentlyBlockedUsers": CurrentlyBlockedUsers(),
                 "Totalblocked": Object.fromEntries(Totalblocked().entries()),
             },
+            "ping": {
+                "AVGServerPing": await AVGServerPing() + "ms",
+                "Upload": bandwidth.totalUpload(),
+                "Download": bandwidth.totalDownload(),
+                "AvgUploadSize": bandwidth.avgUploadSize(),
+                "AvgDownloadSize": bandwidth.avgDownloadSize(),
+            },
             "rpm": {
                 "requestsPerMinute": {
                     "total": Totalrpm().allowedrpm,
@@ -26,6 +35,7 @@ module.exports = (router, client, checkAuth) => {
             "process": {
                 "memoryUsage": processStats.memory,
                 "cpuUsage": processStats.cpu,
+                "uptime": process.uptime(),
             },
             "system": {
                 "uptime": os.uptime(),

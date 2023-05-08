@@ -81,6 +81,7 @@ async function createServer() {
   const verifyRoutes = require('./routes/verify');
   const wafMiddleware = require('./middleware/wafRules');
   const rateLimit = require('./middleware/rateLimiter');
+  const bandwidth = require('./middleware/bandwidth');
 
   const { router: verifyRouter, generateRayId } = verifyRoutes;
 
@@ -93,6 +94,7 @@ async function createServer() {
   app.use(runcheck);
   app.use(wafMiddleware);
   app.use(verifyRouter);
+  app.use(bandwidth);
 
   // Proxy configuration
   const Difficulty = process.env.DIFFICULTY || 1;
