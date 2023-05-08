@@ -44,7 +44,7 @@ async function createServer() {
     socket: {
       host: 'redis-15979.c11.us-east-1-3.ec2.cloud.redislabs.com',
       port: 15979
-    }
+  }
   });
   client.on('error', err => console.log('Redis Client Error', err));
   client.on("ready", () => { logger.success("Event", "Redis client ready"); });
@@ -95,7 +95,7 @@ async function createServer() {
   app.use(verifyRouter);
 
   // Proxy configuration
-  const Difficulty = process.env.DIFFICULTY || 4;
+  const Difficulty = process.env.DIFFICULTY || 1;
 
   function checkAuth(req, res, next) {
     const authCode = req.query.auth;
@@ -166,7 +166,7 @@ async function createServer() {
     if (req.session.whitelisted) {
       next();
     } else {
-      const secret = generateRayId(req.ip);
+      const secret = generateRayId();
       res.render('ddosProtection', { req, secret, sub: secret.substring(0, 25), Difficulty, userIp: userIp });
     }
   });

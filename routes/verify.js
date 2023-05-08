@@ -12,17 +12,16 @@ function checkRayId(prefix, nonce, difficulty) {
     return binaryHash.startsWith('0'.repeat(difficulty));
 }
 
-function generateRayId(ip) {
+function generateRayId() {
     return crypto.randomBytes(16).toString('hex');
 }
 
-router.get('/verify-ray', async (req, res) => {
+router.post('/verify-ray', async (req, res) => {
     const { prefix, nonce, difficulty } = req.body;
 
-    logger.debug('RAY CHECK', `${ip} has requested to verify Ray ID: ${checkRayId(prefix, nonce, difficulty)}`);
+    logger.debug('RAY CHECK', `${req.ip} has requested to verify Ray ID: ${checkRayId(prefix, nonce, difficulty)}`);
 
     if (checkRayId(prefix, nonce, difficulty)) {
-        console.log('Proof of work is valid');
         req.session.whitelisted = true;
         res.sendStatus(200);
     } else {
