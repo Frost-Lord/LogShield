@@ -89,8 +89,7 @@ async function createServer() {
     require(`./api/${file}`)(router, client, checkAuth);
   });
 
-  app.use(rateLimit({ limit: 1, resetInterval: 60 * 1000, blockDuration: 2 * 60 * 1000 }));
-
+  app.use(rateLimit({ limit: 100, resetInterval: 60 * 1000, blockDuration: 2 * 60 * 1000 }));
   app.use(runcheck);
   app.use(wafMiddleware);
   app.use(verifyRouter);

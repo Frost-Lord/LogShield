@@ -1,30 +1,28 @@
 const express = require('express');
 const logger = require('../utils/logger');
+const crypto = require('crypto');
 const router = express.Router();
 
-function generateRayId(ip) {
-    let encryptedSecret = '';
-
-    for (let i = 0; i < process.env.SECRET.length; i++) {
-        const secretChar = process.env.SECRET.charCodeAt(i);
-        const ipChar = ip.charCodeAt(i % ip.length);
-        const encryptedChar = secretChar ^ ipChar;
-        encryptedSecret += ('0' + encryptedChar.toString(16)).slice(-2);
-    }
-
-    return encryptedSecret;
+function checkRayId(prefix, nonce, difficulty) {
+    const hash = crypto
+        .createHash('sha256')
+        .update(prefix + nonce)
+        .digest('hex');
+    const binaryHash = parseInt(hash, 16).toString(2).padStart(256, '0');
+    return binaryHash.startsWith('0'.repeat(difficulty));
 }
 
-function checkRayId(rayId, ip) {
-    logger.debug('RAY CHECK', `${ip} has requested to verify Ray ID: ${rayId === process.env.SECRET}`);
-    return rayId === process.env.SECRET;
+function generateRayId(ip) {
+    return crypto.randomBytes(16).toString('hex');
 }
 
 router.get('/verify-ray', async (req, res) => {
-    const userIp = req.ip || req.headers['x-forwarded-for'];
-    const rayId = req.query.ray;
+    const { prefix, nonce, difficulty } = req.body;
 
-    if (checkRayId(rayId, userIp)) {
+    logger.debug('RAY CHECK', `${ip} has requested to verify Ray ID: ${checkRayId(prefix, nonce, difficulty)}`);
+
+    if (checkRayId(prefix, nonce, difficulty)) {
+        console.log('Proof of work is valid');
         req.session.whitelisted = true;
         res.sendStatus(200);
     } else {

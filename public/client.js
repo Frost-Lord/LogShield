@@ -2,24 +2,34 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function calculateNonce(rayId, userIp) {
-  let secret = '';
+async function calculateNonce(prefix, difficulty) {
+  let nonce = 0;
 
-  for (let i = 0; i < rayId.length / 2; i++) {
-    const encryptedChar = parseInt(rayId.slice(i * 2, i * 2 + 2), 16);
-    const ipChar = userIp.charCodeAt(i % userIp.length);
-    const decryptedChar = encryptedChar ^ ipChar;
-    secret += String.fromCharCode(decryptedChar);
+  while (true) {
+      const hash = new TextEncoder()
+          .encode(prefix + nonce.toString())
+          .reduce((prev, curr) => prev + ('0' + curr.toString(16)).slice(-2), '');
+      const binaryHash = parseInt(hash, 16).toString(2).padStart(256, '0');
+
+      if (binaryHash.startsWith('0'.repeat(difficulty))) {
+          return nonce;
+      }
+
+      nonce++;
   }
-
-  return secret;
 }
 
-async function submitResult(nonce) {
-  const targetUrl = `${window.location.origin}/verify-ray?ray=${nonce}`;
-  const response = await fetch(targetUrl);
+async function submitResult(prefix, nonce, difficulty) {
+  const targetUrl = `${window.location.origin}/verify-ray`;
+  const response = await fetch(targetUrl, {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ prefix, nonce, difficulty }),
+  });
 
-  return response.ok ? true : false;
+  return response.ok;
 }
 
 (async () => {
@@ -28,7 +38,7 @@ async function submitResult(nonce) {
     const submittingResultElement = document.getElementById('submittingResult');
     const redirectingElement = document.getElementById('redirecting');
 
-    const nonce = await calculateNonce(secret, userIp, Difficulty);
+    const nonce = await calculateNonce(secret, Difficulty);
     await sleep(3000);
     calculatingNonceElement.textContent = 'Calculating Ray: ✓';
     await sleep(2000);
