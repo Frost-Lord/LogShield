@@ -1,0 +1,10 @@
+.dashboardArea {
+    margin-left: 250px;
+    padding: 20px;
+}
+
+.row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
