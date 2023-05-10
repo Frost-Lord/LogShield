@@ -176,13 +176,13 @@ async function createServer() {
   app.use(
     '/',
     createProxyMiddleware({
-      target: process.env.TARGETURL,
+      target: process.env.TARGETURL || 'http://localhost:3000',
       changeOrigin: true,
       ws: true,
     })
   );
 
-  app.listen(process.env.PORT, () => {
+  app.listen(process.env.PORT || 7000, () => {
     logger.success("Event", `Proxy server listening at http://localhost:${process.env.PORT}`)
   });
 }
