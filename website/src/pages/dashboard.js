@@ -1,6 +1,6 @@
 import React from 'react';
 import Head from 'next/head';
-import AdminDashboard from '../components/AdminDashboard';
+import AdminDashboard from './components/AdminDashboard';
 
 const DashboardPage = () => {
     return (

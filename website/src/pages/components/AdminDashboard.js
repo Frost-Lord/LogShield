@@ -1,9 +1,10 @@
-import Sidebar from './components/Sidebar';
-import DashboardArea from './components/DashboardArea';
+import Sidebar from './Sidebar';
+import DashboardArea from './DashboardArea';
+import styles from '@/styles/AdminDashboard.module.css';
 
 const AdminDashboard = () => {
     return (
-        <div className="admin-dashboard">
+        <div className={styles['admin-dashboard']}>
             <Sidebar />
             <DashboardArea />
         </div>

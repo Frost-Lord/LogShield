@@ -1,19 +1,21 @@
+// StatsRow.js
+import styles from '@/styles/DashboardArea.module.css';
 import Card from './Card';
 
 const StatsRow = () => {
     return (
-        <div className="stats-row">
+        <div className={styles['card-row']}>
             <Card title="Card 1">
-                {/* Your content here */}
+                <p>test</p>
             </Card>
             <Card title="Card 2">
-                {/* Your content here */}
+            <p>test</p>
             </Card>
             <Card title="Card 3">
-                {/* Your content here */}
+            <p>test</p>
             </Card>
             <Card title="Card 4">
-                {/* Your content here */}
+            <p>test</p>
             </Card>
         </div>
     );

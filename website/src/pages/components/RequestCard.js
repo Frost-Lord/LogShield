@@ -1,4 +1,3 @@
-// RequestCard.js
 import Card from './Card';
 
 const RequestCard = () => {

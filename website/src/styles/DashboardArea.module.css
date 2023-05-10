@@ -1,10 +1,10 @@
 .dashboardArea {
-    margin-left: 250px;
+    width: 100%; /* Takes up the remaining width */
     padding: 20px;
 }
 
-.row {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
+.card-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1cm;
 }

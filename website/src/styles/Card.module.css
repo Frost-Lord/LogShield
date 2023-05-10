@@ -1,8 +1,15 @@
 .card {
-    background-color: var(--box-bg);
+    background-color: white;
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12); /* This will add a grey shadow */
     padding: 20px;
-    border: 3px solid var(--border-color);
-    border-radius: var(--box-border-radius);
+    border: 3px solid #03435b;
+    border-radius: 5px;
     display: block;
     box-shadow: 0 0.75rem 2rem 0 rgba(0, 0, 0, 0.1);
+    color: black;
+    max-width: 90%;
+}
+
+.content {
+    /* styles for the content area */
 }
