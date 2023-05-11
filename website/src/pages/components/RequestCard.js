@@ -1,13 +1,13 @@
-import Card from './Card';
+import styles from "@/styles/Card.module.css";
 
-const RequestCard = () => {
+const RequestCard = ({ data }) => {
     return (
-        <Card title="Most Requested">
+        <div className={`${styles.card} ${styles['card-third']}`}>
             {/* Replace this with dynamic data */}
             <p>Item A: 50 requests</p>
             <p>Item B: 40 requests</p>
             <p>Item C: 30 requests</p>
-        </Card>
+        </div>
     );
 }
 

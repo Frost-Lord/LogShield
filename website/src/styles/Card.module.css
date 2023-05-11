@@ -1,16 +1,32 @@
 .card {
     flex-grow: 1;
-    background-color: white;
-    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12); /* This will add a grey shadow */
-    padding: 20px;
-    border: 3px solid #876969;
-    border-radius: 5px;
-    display: block;
+    background-color: #1a191f;
     box-shadow: 0 0.75rem 2rem 0 rgba(0, 0, 0, 0.1);
-    color: black;
+    padding: 20px;
+    border: 3.5px solid #222028;
+    border-radius: 15px;
+    display: block;
+    color: rgb(255, 255, 255);
     margin-right: 1cm;
 }
 
+.h2{
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.card-third {
+    width: calc(33.33% - 1cm);
+    flex-grow: 0;
+    background-color: #1a191f;
+    box-shadow: 0 0.75rem 2rem 0 rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    border: 3.5px solid #222028;
+    border-radius: 15px;
+    display: block;
+    color: rgb(255, 255, 255);
+    margin-right: 1cm;
+}
 
 .content {
     /* styles for the content area */

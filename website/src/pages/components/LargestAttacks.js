@@ -1,14 +1,14 @@
-import styles from "@/styles/Card.module.css";
+import Card from './Card';
 
-const APICard = ({ data }) => {
+const LargestAttacks = ({ data }) => {
     return (
-        <div className={`${styles.card} ${styles['card-third']}`}>
+        <Card title="API Requests">
             {/* Replace this with a dynamic chart */}
             <p>API A: 200 requests</p>
             <p>API B: 150 requests</p>
             <p>API C: 100 requests</p>
-        </div>
+        </Card>
     );
 }
 
-export default APICard;
+export default LargestAttacks;

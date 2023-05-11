@@ -33,6 +33,8 @@ async function createServer() {
   const train = require('./NGINX/train');
   const session = require('express-session');
   const path = require('path');
+  const cors = require('cors');
+  const bodyParser = require('body-parser');
   const fs = require('fs');
   const app = express();
   const axios = require('axios');
@@ -55,6 +57,8 @@ async function createServer() {
   // Express configuration
   app.use(express.urlencoded({ extended: false }));
   app.use(express.json());
+  app.use(bodyParser.json());
+  app.use(cors());
   app.engine(".ejs", require("ejs").__express);
   app.set("view engine", "ejs");
   app.use(express.static(path.join(__dirname, "/public")));
@@ -100,7 +104,7 @@ async function createServer() {
   const Difficulty = process.env.DIFFICULTY || 1;
 
   function checkAuth(req, res, next) {
-    const authCode = req.query.auth;
+    const authCode = req.body.auth;
 
     if (authCode === 'aielgv8sgeasgryleairgearihu') {
       next();
