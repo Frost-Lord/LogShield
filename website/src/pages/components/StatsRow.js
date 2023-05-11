@@ -1,6 +1,6 @@
 import styles from '@/styles/DashboardArea.module.css';
 import Card from './Card';
-import { FaUserLock, FaStopwatch, FaServer, FaShieldAlt } from 'react-icons/fa';
+import { FaUserLock, FaStopwatch, FaShieldAlt } from 'react-icons/fa';
 import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 

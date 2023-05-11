@@ -11,10 +11,6 @@
     font-weight: bold;
 }
 
-.card:hover {
-    border: 1.0px solid #fc7203;
-}
-
 .h2{
     font-size: 2rem;
     font-weight: 700;
@@ -49,4 +45,9 @@
 .updateIcon {
     margin-left: auto;
     margin-right: 10px;
+}
+
+.progressBarContainer {
+    width: 100px;
+    height: 100px;
 }
