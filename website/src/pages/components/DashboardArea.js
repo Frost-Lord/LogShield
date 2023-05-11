@@ -3,7 +3,7 @@ import axios from 'axios';
 import styles from '@/styles/DashboardArea.module.css';
 import StatsRow from './StatsRow';
 import ActivityCard from './ActivityCard';
-import RequestCard from './RequestCard';
+import NodeCard from './NodeCard';
 import LargestAttacks from './LargestAttacks';
 import APICard from './APICard';
 import LoadingBar from './LoadingBar';
@@ -38,9 +38,9 @@ const DashboardArea = () => {
             <StatsRow data={data} />
             <br></br><br></br>
             <div className={styles.row}>
-                <LargestAttacks data={data} />
-                <RequestCard data={data} />
+                <NodeCard data={data} />
                 <APICard data={data} />
+                <LargestAttacks data={data} />
             </div>
             <br></br><br></br>
             <div className={styles.row}>

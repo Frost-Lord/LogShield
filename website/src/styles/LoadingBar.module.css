@@ -1,13 +1,14 @@
 .loadingBar {
     height: 1cm;
-    background-color: #4fbefb;
+    background-color: #138dcf;
     border-radius: 5px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
-    width: calc(100% - 1cm);
-    margin: 1cm auto;
+    width: calc(100% - 2cm);
+    margin: 1cm 1cm 1cm 1cm;
     font-size: 1.5rem;
     padding-right: 1cm;
+    font-weight: bold;
 }

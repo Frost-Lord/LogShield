@@ -1,13 +1,13 @@
 import styles from "@/styles/Card.module.css";
+import Card from './Card';
 
 const APICard = ({ data }) => {
     return (
-        <div className={`${styles.card} ${styles['card-third']}`}>
-            {/* Replace this with a dynamic chart */}
-            <p>API A: 200 requests</p>
-            <p>API B: 150 requests</p>
-            <p>API C: 100 requests</p>
-        </div>
+        <Card title={"System:"}>
+            <br></br>
+            <p>Total Memory: 0</p>
+            <p>Total Free Memory: 0</p>
+        </Card>
     );
 }
 

@@ -6,9 +6,8 @@
     padding: 20px;
     overflow: auto;
     flex-shrink: 0;
-    border-right: #26272a;
-    border-right-width: 2px;
-    border-right-style: solid;
+    border-left: 2px solid #26272a;
+    font-weight: bold;
 }
 
 .logo {
@@ -19,11 +18,11 @@
 }
 
 .nav-item {
-    padding: 10px 0;
     font-size: 20px;
     color: white;
     display: flex;
     align-items: center;
+    padding-top: 1rem;
 }
 
 .nav-item img {
@@ -31,11 +30,11 @@
 }
 
 .active {
-    color: #0652dd;
-    background-color: #1d2235;
-    border-right: 5px solid #0652dd;
-    padding: 3px 0;
-    width: 100%;
+    color: #fc7203;
+    background-color: #b15e1a2f;
+    border-right: 3px solid #ff7300;
+    padding: 10px 0 10px 10px;
+    padding-top: 1rem;
 }
 
 .icon {

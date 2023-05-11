@@ -1,0 +1,38 @@
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 20px;
+}
+
+.table th {
+    text-align: left;
+    padding: 5px;
+    border-bottom: 0.01px solid rgb(185, 185, 185);
+}
+
+.table td {
+    padding-top: 8px;
+}
+
+.action {
+    padding: 2px;
+    border-radius: 5px;
+}
+
+.success .dot,
+.failed .dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.success .dot {
+    background-color: #04d182;
+}
+
+.failed .dot {
+    background-color: #da0000;
+}
