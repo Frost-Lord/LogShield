@@ -1,26 +1,25 @@
 import React, { useEffect, useRef } from 'react';
 import Card from './Card';
-import { Chart } from 'chart.js/auto';
+import Chart from 'chart.js/auto';
 import styles from '@/styles/Performance.module.css';
 
-const LargestAttacks = ({ data }) => {
+const Performance = () => {
   const chartRef = useRef(null);
   const chartInstanceRef = useRef(null);
-
-  const chartData = {
-    labels: Object.keys(data.rateLimit.Totalblocked),
+  const data = {
+    labels: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
     datasets: [
-      {
-        label: 'Amount',
-        data: Object.values(data.rateLimit.Totalblocked),
-        fill: false,
-        backgroundColor: 'transparent',
-        borderColor: '#1c80d8',
-        pointBackgroundColor: '#1c80d8',
-        borderWidth: 2,
-        tension: 0.4,
-      },
-    ],
+        {
+          label: 'Requests',
+          data: [50, 100, 150, 180, 90, 120, 200],
+          fill: false,
+          backgroundColor: 'transparent',
+          borderColor: '#1c80d8',
+          pointBackgroundColor: '#1c80d8',
+          borderWidth: 2,
+          tension: 0.4,
+        },
+      ],
   };
 
   const options = {
@@ -39,10 +38,7 @@ const LargestAttacks = ({ data }) => {
     },
     plugins: {
       legend: {
-        display: true,
-      },
-      tooltip: {
-        enabled: true,
+        display: false,
       },
     },
     maintainAspectRatio: false,
@@ -55,7 +51,7 @@ const LargestAttacks = ({ data }) => {
       }
       chartInstanceRef.current = new Chart(chartRef.current, {
         type: 'line',
-        data: chartData,
+        data: data,
         options: options,
       });
     }
@@ -67,7 +63,7 @@ const LargestAttacks = ({ data }) => {
   }, [chartRef]);
 
   return (
-    <Card title="API Requests Blocked:">
+    <Card title="Performance:">
       <div className={styles.chartContainer}>
         <canvas ref={chartRef} />
       </div>
@@ -75,4 +71,4 @@ const LargestAttacks = ({ data }) => {
   );
 };
 
-export default LargestAttacks;
+export default Performance;

@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import styles from '@/styles/DashboardArea.module.css';
-import StatsRow from './StatsRow';
+import TopRow from './TopRow';
 import ActivityCard from './ActivityCard';
 import NodeCard from './NodeCard';
 import LargestAttacks from './LargestAttacks';
 import APICard from './APICard';
 import LoadingBar from './LoadingBar';
+import Performance from './Performance';
 
 const DashboardArea = () => {
     const [loading, setLoading] = useState(true);
@@ -34,14 +35,15 @@ const DashboardArea = () => {
 
     return (
         <div className={styles.dashboardArea}>
-            <br></br>
-            <StatsRow data={data} />
+            <br></br><br></br><br></br><br></br>
+            <Performance data={data} />
             <br></br><br></br>
             <div className={styles.row}>
-                <NodeCard data={data} />
-                <APICard data={data} />
                 <LargestAttacks data={data} />
+                <APICard data={data} />
+                <NodeCard data={data} />
             </div>
+            <TopRow data={data} />
             <br></br><br></br>
             <div className={styles.row}>
                 <ActivityCard data={data} />

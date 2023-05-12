@@ -1,6 +1,6 @@
 .loadingBar {
     height: 1cm;
-    background-color: #138dcf;
+    background: linear-gradient(0deg, #3358f4 0%, #1d8cf8 100%);
     border-radius: 5px;
     display: flex;
     align-items: center;

@@ -5,29 +5,25 @@ import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 
 const APICard = ({ data }) => {
-
-    const totalmemory = parseInt(data.system.totalmem || '0', 10);
-    const freememory = parseInt(data.system.freemem || '0', 10);
-    const memPercentage = totalmemory ? ((freememory / totalmemory) * 100) : 0;
-
+    const avgPing = parseInt(data.ping.AVGServerPing || '0', 10);
     return (
-        <Card title={<><FaStopwatch size={30} /> Requests Per Minute:</>}>
-            <div className={styles.cardContent}><p><br></br>
-                <p>RAM:</p>
-            </p>
+        <Card title={<><FaStopwatch size={30} /> Ping:</>}>
+            <br></br>
+            <div className={styles.cardContent}>
+                <div>
+                    <p>Upload: {data.ping.Upload || 0}</p>
+                    <p>Download: {data.ping.Download || 0}</p>
+                </div><br></br>
                 <div className={styles.progressBarContainer}>
                     <CircularProgressbar
-                        value={memPercentage}
-                        text={`${memPercentage.toFixed(0)}%`}
+                        value={avgPing}
+                        maxValue={1000}
+                        text={`${avgPing || "Null "}ms`}
                         styles={buildStyles({
-                            pathColor: memPercentage > 50 ? 'red' : 'green',
+                            pathColor: avgPing > 100 ? 'red' : 'green',
                             textColor: 'white'
                         })}
                     />
-                </div>
-                <div className={styles.cardContent}><p><br></br>
-                    <p>CPU:</p>
-                </p>
                 </div>
             </div>
         </Card>

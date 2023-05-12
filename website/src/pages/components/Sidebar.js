@@ -9,6 +9,7 @@ const Sidebar = () => {
     return (
         <div className={styles.sidebar}>
             <img src="/logo.png" className={styles.logo} />
+            <div className={styles['line']}></div>
             <br></br>
             <nav>
                 <div className={router.pathname == "/dashboard" ? styles.active : styles['nav-item']}>
