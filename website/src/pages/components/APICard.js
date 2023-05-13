@@ -5,14 +5,17 @@ import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 
 const APICard = ({ data }) => {
-    const avgPing = parseInt(data.ping.AVGServerPing || '0', 10);
+    const avgPing = data.reduce((sum, nodeData) => sum + parseInt(nodeData.ping.AVGServerPing || '0', 10), 0) / data.length;
+    const avgUpload = data.reduce((sum, nodeData) => sum + parseFloat(nodeData.ping.Upload || '0'), 0) / data.length;
+    const avgDownload = data.reduce((sum, nodeData) => sum + parseFloat(nodeData.ping.Download || '0'), 0) / data.length;
+
     return (
         <Card title={<><FaStopwatch size={30} /> Ping:</>}>
             <br></br>
             <div className={styles.cardContent}>
                 <div>
-                    <p>Upload: {data.ping.Upload || 0}</p>
-                    <p>Download: {data.ping.Download || 0}</p>
+                    <p>Upload: {avgUpload || 0}</p>
+                    <p>Download: {avgDownload || 0}</p>
                 </div><br></br>
                 <div className={styles.progressBarContainer}>
                     <CircularProgressbar

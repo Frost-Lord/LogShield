@@ -10,9 +10,9 @@ const TopRow = ({ data }) => {
     const chartRef = useRef(null);
     const chartInstanceRef = useRef(null);
 
-    const totalRequests = data.rpm.requestsPerMinute.allowed + data.rpm.requestsPerMinute.blocked;
-    const blockedRequests = data.rpm.requestsPerMinute.blocked;
-    const allowedRequests = data.rpm.requestsPerMinute.allowed;
+    const totalRequests = data.reduce((sum, nodeData) => sum + (nodeData.rpm.requestsPerMinute.allowed || 0) + (nodeData.rpm.requestsPerMinute.blocked || 0), 0);
+    const blockedRequests = data.reduce((sum, nodeData) => sum + (nodeData.rpm.requestsPerMinute.blocked || 0), 0);
+    const allowedRequests = data.reduce((sum, nodeData) => sum + (nodeData.rpm.requestsPerMinute.allowed || 0), 0);
 
     const chartData = {
         labels: ['Total', 'Allowed', 'Blocked'],
@@ -69,15 +69,18 @@ const TopRow = ({ data }) => {
         };
     }, [chartRef]);
 
-    const blockedIPs = parseInt(data.rateLimit.CurrentlyBlockedUsers.current || '0', 10);
+    const blockedIPs = data.reduce((sum, nodeData) => sum + (nodeData.rateLimit.CurrentlyBlockedUsers.current|| 0), 0);
+    const totalblockedIPs = data.reduce((sum, nodeData) => sum + (nodeData.rateLimit.CurrentlyBlockedUsers.total || 0), 0);
     const blockedIPsPercentage = ((blockedIPs / 1000) * 100);
+
+    const totalWAFBlocked = data.reduce((sum, nodeData) => sum + (nodeData.waf.totalwafblocked || 0), 0);
 
     return (
         <div className={styles['card-row']}>
             <Card title={<><FaUserLock size={20} /> RateLimit:</>}>
                 <div className={styles.cardContent}><p><br></br>
                     <p>Currently Blocked IP's: {blockedIPs}</p>
-                    <p>Total req Blocked: {data.rateLimit.CurrentlyBlockedUsers.reqests || 0}</p>
+                    <p>Total req Blocked: {totalblockedIPs || 0}</p>
                 </p>
                     <div className={styles.progressBarContainer}>
                         <CircularProgressbar
@@ -109,7 +112,7 @@ const TopRow = ({ data }) => {
 
             <Card title={<><FaShieldAlt size={30} /> WAF:</>}>
                 <div className={styles.cardContent}><p><br></br>
-                    <p>Total Blocked: {data.waf.totalwafblocked || 0}</p>
+                    <p>Total Blocked: {totalWAFBlocked || 0}</p>
                 </p>
                 </div>
             </Card>

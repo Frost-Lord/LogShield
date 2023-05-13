@@ -3,16 +3,36 @@ import Card from './Card';
 import { Chart } from 'chart.js/auto';
 import styles from '@/styles/Performance.module.css';
 
+const mergeTotalblockedData = (data) => {
+  const mergedData = data.reduce((acc, nodeData) => {
+    if (nodeData.rateLimit && nodeData.rateLimit.Totalblocked) {
+      for (let [key, value] of Object.entries(nodeData.rateLimit.Totalblocked)) {
+        if (!acc[key]) {
+          acc[key] = value;
+        } else {
+          acc[key] += value;
+        }
+      }
+    }
+    acc["2023-05-14"] = 1 //remove this later
+    return acc;
+  }, {});
+
+  return mergedData;
+}
+
 const LargestAttacks = ({ data }) => {
   const chartRef = useRef(null);
   const chartInstanceRef = useRef(null);
+  
+  const mergedData = mergeTotalblockedData(data);
 
   const chartData = {
-    labels: Object.keys(data.rateLimit.Totalblocked),
+    labels: Object.keys(mergedData),
     datasets: [
       {
         label: 'Amount',
-        data: Object.values(data.rateLimit.Totalblocked),
+        data: Object.values(mergedData),
         fill: false,
         backgroundColor: 'transparent',
         borderColor: '#1c80d8',
@@ -67,7 +87,7 @@ const LargestAttacks = ({ data }) => {
   }, [chartRef]);
 
   return (
-    <Card title="API Requests Blocked:">
+    <Card title="Requests Blocked:">
       <div className={styles.chartContainer}>
         <canvas ref={chartRef} />
       </div>

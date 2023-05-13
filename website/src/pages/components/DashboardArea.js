@@ -11,17 +11,20 @@ import Performance from './Performance';
 
 const DashboardArea = () => {
     const [loading, setLoading] = useState(true);
-    const [data, setData] = useState(null);
+    const [data, setData] = useState([]);
 
     useEffect(() => {
+        const nodes = process.env.NEXT_PUBLIC_NODES.split(',').map(node => node.trim());
+        
         const fetchData = async () => {
-            const result = await axios.post('http://localhost:7000/logshield/api/admin', {
-                "auth": "aielgv8sgeasgryleairgearihu",
-            }).catch((err) => console.log(err));
-            if (result === undefined) {
-                return;
-            }
-            setData(result.data);
+            const results = await Promise.all(nodes.map(node =>
+                axios.post(`${node}/logshield/api/admin`, {
+                    "auth": "aielgv8sgeasgryleairgearihu",
+                }).catch(err => console.log(err))
+            ));
+
+            const data = results.map(result => result.data);
+            setData(data);
             setTimeout(() => {
                 setLoading(false);
             }, 3000);
@@ -36,18 +39,20 @@ const DashboardArea = () => {
     return (
         <div className={styles.dashboardArea}>
             <br></br><br></br><br></br><br></br>
-            <Performance data={data} />
-            <br></br><br></br>
-            <div className={styles.row}>
-                <LargestAttacks data={data} />
-                <APICard data={data} />
-                <NodeCard data={data} />
-            </div>
-            <TopRow data={data} />
-            <br></br><br></br>
-            <div className={styles.row}>
-                <ActivityCard data={data} />
-            </div>
+                <div key={"1"}>
+                    <Performance data={data} />
+                    <br></br><br></br>
+                    <div className={styles.row}>
+                        <LargestAttacks data={data} />
+                        <APICard data={data} />
+                        <NodeCard data={data} />
+                    </div>
+                    <TopRow data={data} />
+                    <br></br><br></br>
+                    <div className={styles.row}>
+                        <ActivityCard data={data} />
+                    </div>
+                </div>
         </div>
     );
 };
