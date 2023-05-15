@@ -1,3 +1,34 @@
+const express = require('express');
+const router = express.Router();
+const { createProxyMiddleware } = require('http-proxy-middleware');
+const evaluateAccessLog = require('./NGINX/evaluate');
+const train = require('./NGINX/train');
+const session = require('express-session');
+const path = require('path');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const fs = require('fs');
+const app = express();
+const axios = require('axios');
+require("dotenv").config();
+const redis = require('redis');
+const client = global.client = redis.createClient({
+  username: 'default',
+  password: 'qVFxATVuYmGMwJRengkJYm1Z0cz9V8bi',
+  socket: {
+    host: 'redis-15979.c11.us-east-1-3.ec2.cloud.redislabs.com',
+    port: 15979
+}
+});
+client.on('error', err => console.log('Redis Client Error', err));
+client.on("ready", () => { logger.success("Event", "Redis client ready"); });
+client.on("reconnecting", () => { logger.warn("Event", "Redis client reconnecting"); });
+client.on("end", () => { logger.warn("Event", "Redis client connection ended"); });
+client.connect();
+
+
+
+//Clustering
 const cluster = require('node:cluster');
 const os = require('node:os');
 const logger = require('./utils/logger');
@@ -26,34 +57,6 @@ if (cluster.isPrimary) {
 }
 
 async function createServer() {
-  const express = require('express');
-  const router = express.Router();
-  const { createProxyMiddleware } = require('http-proxy-middleware');
-  const evaluateAccessLog = require('./NGINX/evaluate');
-  const train = require('./NGINX/train');
-  const session = require('express-session');
-  const path = require('path');
-  const cors = require('cors');
-  const bodyParser = require('body-parser');
-  const fs = require('fs');
-  const app = express();
-  const axios = require('axios');
-  require("dotenv").config();
-  const redis = require('redis');
-  const client = global.client = redis.createClient({
-    username: 'default',
-    password: 'qVFxATVuYmGMwJRengkJYm1Z0cz9V8bi',
-    socket: {
-      host: 'redis-15979.c11.us-east-1-3.ec2.cloud.redislabs.com',
-      port: 15979
-  }
-  });
-  client.on('error', err => console.log('Redis Client Error', err));
-  client.on("ready", () => { logger.success("Event", "Redis client ready"); });
-  client.on("reconnecting", () => { logger.warn("Event", "Redis client reconnecting"); });
-  client.on("end", () => { logger.warn("Event", "Redis client connection ended"); });
-  client.connect();
-
   // Express configuration
   app.use(express.urlencoded({ extended: false }));
   app.use(express.json());
