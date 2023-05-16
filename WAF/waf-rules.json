@@ -192,12 +192,6 @@
       "cmt": "CSS pointer to resource"
     },
     {
-      "id": 33,
-      "reg": "\\/\\/.+?\\/",
-      "type": 1,
-      "cmt": "URL"
-    },
-    {
       "id": 34,
       "reg": "\\)\\s*\\[",
       "type": 2,

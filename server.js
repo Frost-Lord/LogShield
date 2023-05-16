@@ -57,7 +57,6 @@ if (cluster.isPrimary) {
 }
 
 async function createServer() {
-  // Express configuration
   app.use(express.urlencoded({ extended: true }));
   app.use(express.json());
   app.use(bodyParser.json());
@@ -68,7 +67,6 @@ async function createServer() {
   app.set("views", __dirname + "/views");
   app.set("trust proxy", true);
 
-  // Session configuration
   app.use(
     session({
       key: 'logshield',
