@@ -58,7 +58,7 @@ if (cluster.isPrimary) {
 
 async function createServer() {
   // Express configuration
-  app.use(express.urlencoded({ extended: false }));
+  app.use(express.urlencoded({ extended: true }));
   app.use(express.json());
   app.use(bodyParser.json());
   app.use(cors());
@@ -66,13 +66,7 @@ async function createServer() {
   app.set("view engine", "ejs");
   app.use(express.static(path.join(__dirname, "/public")));
   app.set("views", __dirname + "/views");
-  app.use(express.json());
   app.set("trust proxy", true);
-  app.use(
-    express.urlencoded({
-      extended: true,
-    })
-  );
 
   // Session configuration
   app.use(
@@ -97,7 +91,7 @@ async function createServer() {
     require(`./api/${file}`)(router, client, checkAuth);
   });
 
-  app.use(rateLimit({ limit: 1, resetInterval: 60 * 1000, blockDuration: 2 * 60 * 1000 }));
+  app.use(rateLimit({ limit: 100, resetInterval: 60 * 1000, blockDuration: 2 * 60 * 1000 }));
   app.use(runcheck);
   app.use(wafMiddleware);
   app.use(verifyRouter);
@@ -181,11 +175,14 @@ async function createServer() {
   });
 
   app.use(
-    '/',
+    ['**', '/'],
     createProxyMiddleware({
       target: process.env.TARGETURL || 'http://localhost:3000',
       changeOrigin: true,
       ws: true,
+      onProxyRes: (proxyRes, req, res) => {
+        proxyRes.headers['x-frame-options'] = '';
+      },
     })
   );
 

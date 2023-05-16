@@ -60,7 +60,7 @@ const Performance = () => {
         chartInstanceRef.current.destroy();
       }
     };
-  }, [chartRef]);
+  }, [chartRef, data, options]);
 
   return (
     <Card title="Performance:">

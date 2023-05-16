@@ -21,7 +21,7 @@ const NodeCard = ({ data }) => {
         <div>
             <Card title={"Nodes:"}>
                 <br></br>
-                {data.map((node, index) => (
+                {data && data.map((node, index) => (
                     <div key={index} className={styles.node}>
                         <span
                             className={styles.statusDot}

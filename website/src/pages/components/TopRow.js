@@ -10,10 +10,14 @@ const TopRow = ({ data }) => {
     const chartRef = useRef(null);
     const chartInstanceRef = useRef(null);
 
-    const totalRequests = data.reduce((sum, nodeData) => sum + (nodeData.rpm.requestsPerMinute.allowed || 0) + (nodeData.rpm.requestsPerMinute.blocked || 0), 0);
-    const blockedRequests = data.reduce((sum, nodeData) => sum + (nodeData.rpm.requestsPerMinute.blocked || 0), 0);
-    const allowedRequests = data.reduce((sum, nodeData) => sum + (nodeData.rpm.requestsPerMinute.allowed || 0), 0);
-
+    let totalRequests;
+    let blockedRequests;
+    let allowedRequests;
+    if (data && data.length > 0) {
+        totalRequests = data.reduce((sum, nodeData) => sum + (nodeData.rpm.requestsPerMinute.allowed || 0) + (nodeData.rpm.requestsPerMinute.blocked || 0), 0);
+        blockedRequests = data.reduce((sum, nodeData) => sum + (nodeData.rpm.requestsPerMinute.blocked || 0), 0);
+        allowedRequests = data.reduce((sum, nodeData) => sum + (nodeData.rpm.requestsPerMinute.allowed || 0), 0);
+    }    
     const chartData = {
         labels: ['Total', 'Allowed', 'Blocked'],
         datasets: [
@@ -67,25 +71,29 @@ const TopRow = ({ data }) => {
                 chartInstanceRef.current.destroy();
             }
         };
-    }, [chartRef]);
+    }, [chartRef, chartData, options]);
 
-    const blockedIPs = data.reduce((sum, nodeData) => sum + (nodeData.rateLimit.CurrentlyBlockedUsers.current|| 0), 0);
-    const totalblockedIPs = data.reduce((sum, nodeData) => sum + (nodeData.rateLimit.CurrentlyBlockedUsers.total || 0), 0);
-    const blockedIPsPercentage = ((blockedIPs / 1000) * 100);
-
-    const totalWAFBlocked = data.reduce((sum, nodeData) => sum + (nodeData.waf.totalwafblocked || 0), 0);
-
+    let blockedIPs;
+    let totalblockedIPs;
+    let blockedIPsPercentage;
+    let totalWAFBlocked;
+    if (data && data.length > 0) {
+        blockedIPs = data.reduce((sum, nodeData) => sum + (nodeData.rateLimit.CurrentlyBlockedUsers.current || 0), 0);
+        totalblockedIPs = data.reduce((sum, nodeData) => sum + (nodeData.rateLimit.CurrentlyBlockedUsers.total || 0), 0);
+        blockedIPsPercentage = ((blockedIPs / 1000) * 100);
+        totalWAFBlocked = data.reduce((sum, nodeData) => sum + (nodeData.waf.totalwafblocked || 0), 0);
+    }    
     return (
         <div className={styles['card-row']}>
             <Card title={<><FaUserLock size={20} /> RateLimit:</>}>
                 <div className={styles.cardContent}><p><br></br>
-                    <p>Currently Blocked IP's: {blockedIPs}</p>
+                    <p>Currently Blocked IP&apos;s: {blockedIPs}</p>
                     <p>Total req Blocked: {totalblockedIPs || 0}</p>
                 </p>
                     <div className={styles.progressBarContainer}>
                         <CircularProgressbar
                             value={blockedIPsPercentage}
-                            text={`${blockedIPsPercentage.toFixed(0)}%`}
+                            text={`${(blockedIPsPercentage || 0).toFixed(0)}%`}
                             styles={buildStyles({
                                 pathColor: blockedIPsPercentage > 50 ? 'red' : 'green',
                                 textColor: 'white'

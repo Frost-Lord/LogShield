@@ -5,9 +5,14 @@ import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 
 const APICard = ({ data }) => {
-    const avgPing = data.reduce((sum, nodeData) => sum + parseInt(nodeData.ping.AVGServerPing || '0', 10), 0) / data.length;
-    const avgUpload = data.reduce((sum, nodeData) => sum + parseFloat(nodeData.ping.Upload || '0'), 0) / data.length;
-    const avgDownload = data.reduce((sum, nodeData) => sum + parseFloat(nodeData.ping.Download || '0'), 0) / data.length;
+    let avgPing;
+    let avgUpload;
+    let avgDownload;
+    if (data && data.length > 0) {
+        avgPing = data.reduce((sum, nodeData) => sum + parseInt(nodeData.ping.AVGServerPing || '0', 10), 0) / data.length;
+        avgUpload = data.reduce((sum, nodeData) => sum + parseFloat(nodeData.ping.Upload || '0'), 0) / data.length;
+        avgDownload = data.reduce((sum, nodeData) => sum + parseFloat(nodeData.ping.Download || '0'), 0) / data.length;
+    }
 
     return (
         <Card title={<><FaStopwatch size={30} /> Ping:</>}>
