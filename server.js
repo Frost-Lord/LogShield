@@ -13,11 +13,11 @@ const axios = require('axios');
 require("dotenv").config();
 const redis = require('redis');
 const client = global.client = redis.createClient({
-  username: 'default',
-  password: 'qVFxATVuYmGMwJRengkJYm1Z0cz9V8bi',
+  username: process.env.Redis_Username,
+  password: process.env.Redis_Password,
   socket: {
-    host: 'redis-15979.c11.us-east-1-3.ec2.cloud.redislabs.com',
-    port: 15979
+    host: process.env.Redis_Host,
+    port: process.env.Redis_Port
 }
 });
 client.on('error', err => console.log('Redis Client Error', err));
@@ -26,22 +26,19 @@ client.on("reconnecting", () => { logger.warn("Event", "Redis client reconnectin
 client.on("end", () => { logger.warn("Event", "Redis client connection ended"); });
 client.connect();
 
-
-
-//Clustering
 const cluster = require('node:cluster');
 const os = require('node:os');
 const logger = require('./utils/logger');
 
-const numCPUs = os.availableParallelism();
-if (cluster.isPrimary) {
-  console.log(`Primary ${process.pid} is running`);
-
+if (cluster.isMaster) {
+  const numCPUs = os.cpus().length;
   for (let i = 0; i < numCPUs; i++) {
     cluster.fork();
   }
+
   cluster.on('exit', (worker, code, signal) => {
-    console.log(`worker ${worker.process.pid} died`);
+    console.log(`Worker ${worker.process.pid} died. Starting a new one...`);
+    cluster.fork();
   });
 } else {
   if (cluster.isPrimary) {
@@ -73,7 +70,7 @@ async function createServer() {
       secret: 'sg809psargae9pr8gaertgheho9ar8g',
       resave: false,
       saveUninitialized: true,
-      cookie: { maxAge: 30 * 60 * 1000 }, // 30 minutes
+      cookie: { maxAge: process.env.Session_Time * 60 * 1000 }, // 30 minutes
     })
   );
 
@@ -89,7 +86,7 @@ async function createServer() {
     require(`./api/${file}`)(router, client, checkAuth);
   });
 
-  app.use(rateLimit({ limit: 100, resetInterval: 60 * 1000, blockDuration: 2 * 60 * 1000 }));
+  app.use(rateLimit({ limit: process.env.Max_Requests, resetInterval: 60 * 1000 * process.env.Reset_Interval, blockDuration: process.env.BlockDuration * 60 * 1000 }));
   app.use(runcheck);
   app.use(wafMiddleware);
   app.use(verifyRouter);
