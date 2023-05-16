@@ -1,0 +1,25 @@
+version: '3.7'
+
+services:
+  logshield:
+    container_name: logshield
+    image: glitchedking/logshield
+    environment:
+      - 'PORT=7000'
+      - 'SECRET='
+      - 'DIFFICULTY=0'
+      - 'TARGETURL="http://127.0.0.1:3000'
+      - 'WHITELISTED=127.0.0.1'
+      - 'Redis_Username='
+      - 'Redis_Password='
+      - 'Redis_Host=redis'
+      - 'Redis_Port=6379'
+      - 'Session_Time=30'
+      - 'Max_Requests=100000'
+      - 'Reset_Interval=1'
+      - 'BlockDuration=2'
+    ports:
+      - '7000:7000'
+  redis:
+    container_name: redis
+    image: redis:alpine
