@@ -48,7 +48,6 @@ const rateLimit = (options = {}) => {
     if (req.session && req.session.whitelisted) {
       return next();
     }
-    
 
     async function redirect(req, res, userIp) {
       rpmData.blocked.push({ timestamp: now, count: 1 });

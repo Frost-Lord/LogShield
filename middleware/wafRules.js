@@ -4,7 +4,6 @@ const router = express.Router();
 const path = require('path');
 const fs = require('fs');
 const totalblocked = 0;
-
 const wafRulesPath = path.join(__dirname, '../WAF/waf-rules.json');
 const wafRules = JSON.parse(fs.readFileSync(wafRulesPath, 'utf8'));
 
@@ -21,6 +20,13 @@ function checkAgainstWAFRules(value) {
 }
 
 router.use((req, res, next) => {
+  const whitelisted = (process.env.WHITELISTED || '').split(',').map(ip => ip.trim()).filter(ip => ip.length > 0);
+  if (whitelisted.includes(req.ip)) {
+    return next();
+  }
+  if (req.session && req.session.whitelisted) {
+    return next();
+  }
   const queryParams = Object.values(req.query).join(' ');
   const bodyParams = Object.values(req.body).join(' ');
 
