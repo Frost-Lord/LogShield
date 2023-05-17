@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.4.0",
     "@fortawesome/free-solid-svg-icons": "^6.4.0",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@next/font": "13.1.6",
@@ -22,7 +23,8 @@
     "react-circular-progressbar": "^2.1.0",
     "react-dom": "18.2.0",
     "react-icons": "^4.8.0",
-    "react-modal-video": "^2.0.0"
+    "react-modal-video": "^2.0.0",
+    "sharp": "^0.32.1"
   },
   "devDependencies": {
     "@types/node": "^18.15.11",
