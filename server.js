@@ -41,13 +41,10 @@ if (cluster.isPrimary) {
     console.log(`Worker ${worker.process.pid} died. Starting a new one...`);
     cluster.fork();
   });
-} else {
-  if (cluster.isPrimary) {
-    global.disableLogs = false;
-  } else {
-    global.disableLogs = true;
-  }
   createServer();
+  global.disableLogs = false;
+} else {
+  global.disableLogs = true;
   setTimeout(() => {
     global.disableLogs = false;
     logger.worker("Event", `Worker ${process.pid} started`);
