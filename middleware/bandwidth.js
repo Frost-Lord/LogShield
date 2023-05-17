@@ -50,4 +50,4 @@ router.use((req, res, next) => {
 });
 
 module.exports = router;
-module.exports.bandwidth = { bandwidth };
+module.exports.bandwidth = bandwidth;

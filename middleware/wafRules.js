@@ -3,7 +3,7 @@ const logger = require('../utils/logger');
 const router = express.Router();
 const path = require('path');
 const fs = require('fs');
-const totalblocked = 0;
+let totalblocked = 0;
 const wafRulesPath = path.join(__dirname, '../WAF/waf-rules.json');
 const wafRules = JSON.parse(fs.readFileSync(wafRulesPath, 'utf8'));
 
@@ -37,9 +37,7 @@ router.use((req, res, next) => {
   next();
 });
 
-function totalwafblocked() { 
-  return totalblocked; 
-}
+const totalwafblocked = () => totalblocked;
 
 module.exports = router;
-module.exports.wafData = {totalwafblocked};
+module.exports.wafData = { totalwafblocked };

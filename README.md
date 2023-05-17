@@ -44,6 +44,27 @@ vus_max........................: 64     min=64      max=64
 
 Blocked 99.73% of 3817 requests
 
+## Environment Variables
+
+The following environment variables are used in the application:
+
+| Variable            | Description                           | Example Value                                      |
+|---------------------|---------------------------------------|----------------------------------------------------|
+| SECRET              | Secret key for session encryption     | sg809psargae9pr8gaertgheho9ar8g                    |
+| DIFFICULTY          | Difficulty level for the proxy server  | 0                                                  |
+| PORT                | Port number for the proxy server       | 7000                                               |
+| TARGETURL           | URL of the target server to proxy      | http://127.0.0.1:3000                              |
+| WHITELISTED         | Whitelisted IP addresses               | 127.0.0.1                                          |
+| Redis_Username      | Username for Redis database connection | default                                            |
+| Redis_Password      | Password for Redis database connection | qVFxATVuYmGMwJRengkJYm1Z0cz9V8bi                    |
+| Redis_Host          | Host address for Redis database         | redis-15979.c21.us-east-1-3.ec2.cloud.redislabs.com |
+| Redis_Port          | Port number for Redis database          | 6000                                              |
+| Session_Time        | Session expiration time in minutes     | 30                                                 |
+| Max_Requests        | Maximum number of requests per minute  | 100000                                             |
+| Reset_Interval      | Request rate limiter reset interval    | 1                                                  |
+| BlockDuration       | Duration to block IP for rate limiting | 2                                                  |
+
+
 # AI:
 
 LogShield uses a neural network model to analyze access logs and predict whether each user is malicious or legitimate based on their IP address, request method, response status code, and bytes sent. The model is trained on a combination of legitimate and malicious access logs, and can be retrained on new data to improve its accuracy.

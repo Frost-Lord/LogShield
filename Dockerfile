@@ -5,5 +5,6 @@ COPY . .
 RUN npm i
 
 FROM node:20-alpine
-WORKDIR /usr/src/logshield
+COPY . /usr/src/logshield
+EXPOSE 7000
 CMD [ "node", "server.js" ]

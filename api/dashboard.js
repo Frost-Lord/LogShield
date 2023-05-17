@@ -19,7 +19,7 @@ module.exports = (router, client, checkAuth) => {
                 "Totalblocked": Object.fromEntries(Totalblocked().entries()),
             },
             "ping": {
-                "AVGServerPing": await AVGServerPing() + "ms",
+                "AVGServerPing": `${await AVGServerPing()}ms`,
                 "Upload": bandwidth.totalUpload(),
                 "Download": bandwidth.totalDownload(),
                 "AvgUploadSize": bandwidth.avgUploadSize(),

@@ -2,15 +2,14 @@ const axios = require('axios');
 
 async function AVGServerPing() {
   try {
-    const pingResults = [];
-
-    for (let i = 0; i < 5; i++) {
-      const start = Date.now();
-      await axios.get("http://localhost:" + process.env.PORT);
-      const end = Date.now();
-      const ping = end - start;
-      pingResults.push(ping);
-    }
+    const pingResults = await Promise.all(
+      Array.from({ length: 5 }, async () => {
+        const start = Date.now();
+        await axios.get(`http://localhost:${process.env.PORT}`);
+        const end = Date.now();
+        return end - start;
+      })
+    );
 
     const avgPing = pingResults.reduce((total, ping) => total + ping, 0) / pingResults.length;
     return avgPing;
@@ -19,4 +18,4 @@ async function AVGServerPing() {
   }
 }
 
-module.exports = {AVGServerPing};
+module.exports = { AVGServerPing };
