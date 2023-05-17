@@ -30,7 +30,7 @@ const cluster = require('node:cluster');
 const os = require('node:os');
 const logger = require('./utils/logger');
 
-if (cluster.isMaster) {
+if (cluster.isPrimary) {
   const numCPUs = os.cpus().length;
   for (let i = 0; i < numCPUs; i++) {
     cluster.fork();
