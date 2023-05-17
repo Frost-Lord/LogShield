@@ -61,8 +61,8 @@ The following environment variables are used in the application:
 | Redis_Port          | Port number for Redis database          | 6000                                              |
 | Session_Time        | Session expiration time in minutes     | 30                                                 |
 | Max_Requests        | Maximum number of requests per minute  | 100000                                             |
-| Reset_Interval      | Request rate limiter reset interval    | 1                                                  |
-| BlockDuration       | Duration to block IP for rate limiting | 2                                                  |
+| Reset_Interval      | Request rate limiter reset interval (Per 1 min)   | 1                                       |
+| BlockDuration       | Duration to block IP for rate limiting (Per 1 min) | 2                                      |
 
 
 # AI:
