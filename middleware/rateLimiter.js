@@ -1,3 +1,4 @@
+const { data } = require('@tensorflow/tfjs-node');
 const logger = require('../utils/logger');
 const client = global.client;
 const ipRequests = new Map();
@@ -8,6 +9,7 @@ const rpmData = {
   total: []
 };
 
+
 const whitelisted = (process.env.WHITELISTED || '').split(',').map(ip => ip.trim()).filter(ip => ip.length > 0);
 
 const rateLimit = (options = {}) => {
@@ -17,28 +19,11 @@ const rateLimit = (options = {}) => {
   const nonceLimit = options.nonceLimit || 10;
   const nonceWindow = options.nonceWindow || 5 * 1000; // 5 seconds
 
-  const redirect = (req, res, userIp) => {
-    rpmData.blocked.push({ timestamp: now, count: 1 });
-    rpmData.total.push({ timestamp: now, count: 1 });
-
-    const today = new Date().toISOString().split('T')[0];
-    totalBlocked.set(today, (totalBlocked.get(today) || 0) + 1);
-    const ipData = ipRequests.get(userIp);
-    ipData.totalBlockedRequests++;
-    logger.user("EVENT", `IP address ${userIp} has been banned for too many requests`);
-    if (req.headers?.accept && req.headers.accept.includes('application/json')) {
-      res.status(429).json({ error: 'Too many requests. Please wait and try again later.' });
-    } else {
-      res.render('banned', { userIp });
-    }
-  };
-
-  const checkNonceFlood = async (ip) => {
+  function checkNonceFlood(ip) {
     const now = Date.now();
     const key = `nonceRequests:${ip}`;
 
-    try {
-      const requests = await client.get(key);
+    client.get(key).then((requests) => {
       const validRequests = requests
         ? JSON.parse(requests).filter(
           (timestamp) => now - timestamp <= nonceWindow
@@ -46,11 +31,12 @@ const rateLimit = (options = {}) => {
         : [];
       const isFlood = validRequests.length >= nonceLimit;
       return isFlood;
-    } catch (err) {
-      console.error(err);
-      return null;
-    }
-  };
+    }).catch((err) => {
+      console.log(err);
+      return null
+    });
+  }
+
 
   return async (req, res, next) => {
     const now = Date.now();
@@ -61,6 +47,22 @@ const rateLimit = (options = {}) => {
     }
     if (req.session && req.session.whitelisted) {
       return next();
+    }
+
+    async function redirect(req, res, userIp) {
+      rpmData.blocked.push({ timestamp: now, count: 1 });
+      rpmData.total.push({ timestamp: now, count: 1 });
+
+      const today = new Date().toISOString().split('T')[0];
+      totalBlocked.set(today, (totalBlocked.get(today) || 0) + 1);
+      const ipData = ipRequests.get(userIp);
+      ipData.totalBlockedRequests++;
+      logger.user("EVENT", `IP address ${userIp} has been banned for too many requests`);
+      if (req.headers?.accept && req.headers.accept.includes('application/json')) {
+        res.status(429).json({ error: 'Too many requests. Please wait and try again later.' });
+      } else {
+        res.render('banned', { userIp });
+      }
     }
 
     if (!ipRequests.has(ip)) {
@@ -94,40 +96,41 @@ const rateLimit = (options = {}) => {
           redirect(req, res, ip);
           return;
         }
-
       }
     }
-    const isFlood = await checkNonceFlood(ip);
+
+    const isFlood = checkNonceFlood(ip);
     if (isFlood) {
       redirect(req, res, ip);
       return;
     }
     trackNonceRequests(req, res, next, nonceLimit, nonceWindow);
-
   };
 };
 
 const trackNonceRequests = async (req, res, next, nonceLimit, nonceWindow) => {
   const ip = req.ip;
   const now = Date.now();
-  const key = `nonceRequests: ${ ip }`;
+  const key = `nonceRequests:${ip}`;
 
-  try {
-    const requests = await client.get(key);
+  await client.get(key).then(async (requests) => {
     const timestamps = requests ? JSON.parse(requests) : [];
     timestamps.push(now);
-    await client.set(key, JSON.stringify(timestamps.slice(-nonceLimit)), 'EX', Math.ceil(nonceWindow / 1000));
+
+    await client.set(key, JSON.stringify(timestamps.slice(-nonceLimit)), 'EX', Math.ceil(nonceWindow / 1000)).catch((err) => {
+      console.error(err);
+      return next(err);
+    });
     rpmData.allowed.push({ timestamp: now, count: 1 });
     rpmData.total.push({ timestamp: now, count: 1 });
     next();
-
-  } catch (err) {
+  }).catch((err) => {
     console.error(err);
     return next(err);
-  }
+  });
 };
 
-const CurrentlyBlockedUsers = () => {
+function CurrentlyBlockedUsers() {
   const now = Date.now();
   let blockedUsers = 0;
   let totalRequests = 0;
@@ -139,23 +142,23 @@ const CurrentlyBlockedUsers = () => {
     totalRequests += ipData.totalBlockedRequests;
   }
 
-  return { current: blockedUsers, requests: totalRequests };
-};
+  return { "current": blockedUsers, "reqests": totalRequests };
+}
 
-const TotalBlocked = () => {
+function Totalblocked() {
   return totalBlocked;
-};
+}
 
-const TotalRpm = () => {
+function Totalrpm() {
   const now = Date.now();
   const start = now - 60000;
-  let allowedRpm = 0;
-  let blockedRpm = 0;
-  let totalRpm = 0;
+  let allowedrpm = 0;
+  let blockedrpm = 0;
+  let totalrpm = 0;
 
   rpmData.allowed = rpmData.allowed.filter(entry => {
     if (entry.timestamp >= start && entry.timestamp <= now) {
-      allowedRpm += entry.count;
+      allowedrpm += entry.count;
       return true;
     }
     return false;
@@ -163,7 +166,7 @@ const TotalRpm = () => {
 
   rpmData.blocked = rpmData.blocked.filter(entry => {
     if (entry.timestamp >= start && entry.timestamp <= now) {
-      blockedRpm += entry.count;
+      blockedrpm += entry.count;
       return true;
     }
     return false;
@@ -171,14 +174,15 @@ const TotalRpm = () => {
 
   rpmData.total = rpmData.total.filter(entry => {
     if (entry.timestamp >= start && entry.timestamp <= now) {
-      totalRpm += entry.count;
+      totalrpm += entry.count;
       return true;
     }
     return false;
   });
 
-  return { allowedRpm, blockedRpm, totalRpm };
-};
+  return { allowedrpm, blockedrpm, totalrpm };
+}
+
 
 module.exports = rateLimit;
-module.exports.rateLimitData = { CurrentlyBlockedUsers, TotalBlocked, TotalRpm };
+module.exports.rateLimitData = { CurrentlyBlockedUsers, Totalblocked, Totalrpm };

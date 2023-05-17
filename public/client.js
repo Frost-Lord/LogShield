@@ -31,30 +31,34 @@ document.addEventListener('DOMContentLoaded', async () => {
   const workers = [];
   let nonceFound = false;
 
-  for (let i = 0; i < numWorkers; i++) {
-    const worker = createWorker(secret, Difficulty, i, numWorkers, async (event) => {
-      if (!nonceFound) {
-        nonceFound = true;
-        const { nonce } = event.data;
+  async function handleNonceFound(event) {
+    if (!nonceFound) {
+      nonceFound = true;
+      const { nonce } = event.data;
 
-        workers.forEach((worker) => worker.terminate());
+      workers.forEach((worker) => worker.terminate());
 
-        await sleep(3000);
-        calculatingNonceElement.textContent = 'Calculating Ray: ✓';
-        await sleep(2000);
-        submittingResultElement.textContent = 'Submitting Result: ✓';
+      await Promise.all([
+        sleep(3000),
+        sleep(2000).then(() => calculatingNonceElement.textContent = 'Calculating Ray: ✓'),
+      ]);
 
-        const isResultAccepted = await submitResult(secret, nonce, Difficulty);
-        if (isResultAccepted) {
-          redirectingElement.textContent = 'Redirecting: ✓';
-          await sleep(5000);
-          window.location.reload();
-        } else {
-          redirectingElement.textContent = 'Redirecting: ✗';
-          submittingResultElement.textContent = 'Submitting Result: ✗';
-        }
+      submittingResultElement.textContent = 'Submitting Result: ✓';
+
+      const isResultAccepted = await submitResult(secret, nonce, Difficulty);
+      if (isResultAccepted) {
+        redirectingElement.textContent = 'Redirecting: ✓';
+        await sleep(5000);
+        window.location.reload();
+      } else {
+        redirectingElement.textContent = 'Redirecting: ✗';
+        submittingResultElement.textContent = 'Submitting Result: ✗';
       }
-    });
+    }
+  }
+
+  for (let i = 0; i < numWorkers; i++) {
+    const worker = createWorker(secret, Difficulty, i, numWorkers, handleNonceFound);
     workers.push(worker);
   }
 });

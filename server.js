@@ -1,15 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const { createProxyMiddleware } = require('http-proxy-middleware');
-const evaluateAccessLog = require('./NGINX/evaluate');
-const train = require('./NGINX/train');
+const app = express();
+const compression = require('compression');
 const session = require('express-session');
 const path = require('path');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const fs = require('fs');
-const app = express();
 const axios = require('axios');
+const { createProxyMiddleware } = require('http-proxy-middleware');
+const evaluateAccessLog = require('./NGINX/evaluate');
+const train = require('./NGINX/train');
 require("dotenv").config();
 const redis = require('redis');
 const client = global.client = redis.createClient({
@@ -54,6 +55,7 @@ if (cluster.isPrimary) {
 }
 
 async function createServer() {
+  app.use(compression());
   app.use(express.urlencoded({ extended: true }));
   app.use(express.json());
   app.use(bodyParser.json());
@@ -175,9 +177,6 @@ async function createServer() {
       target: process.env.TARGETURL || 'http://localhost:3000',
       changeOrigin: true,
       ws: true,
-      onProxyRes: (proxyRes, req, res) => {
-        proxyRes.headers['x-frame-options'] = '';
-      },
     })
   );
 
