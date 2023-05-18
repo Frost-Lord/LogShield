@@ -9,8 +9,8 @@ const bodyParser = require('body-parser');
 const fs = require('fs');
 const axios = require('axios');
 const { createProxyMiddleware } = require('http-proxy-middleware');
-const evaluateAccessLog = require('./NGINX/evaluate');
-const train = require('./NGINX/train');
+const evaluateAccessLog = require('./plugin/NGINX/evaluate.js');
+const train = require('./plugin/NGINX/train.js');
 require("dotenv").config();
 const redis = require('redis');
 const client = global.client = redis.createClient({

@@ -14,8 +14,8 @@ function readLogs(dir) {
 
     return logDataArray;
 }
-const accessLogDataArray = readLogs('./NGINX/Train/normal');
-const maliciousLogDataArray = readLogs('./NGINX/Train/malicious');
+const accessLogDataArray = readLogs('./plugin/NGINX/Train/normal');
+const maliciousLogDataArray = readLogs('./plugin/NGINX/Train/malicious');
 
 function parseNginxLogs(logData) {
     const logs = logData.split('\n');
@@ -99,7 +99,7 @@ async function train(trainDataset, trainLabels) {
         callbacks: tf.callbacks.earlyStopping({ monitor: 'val_loss', patience: 300 }),
     });
     console.log('Training completed');
-    await model.save('file://./NGINX/model');
+    await model.save('file://./plugin/NGINX/model');
 }
 
 async function evaluate(testDataset, testLabels) {

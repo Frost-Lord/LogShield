@@ -2,11 +2,11 @@ const tf = require('@tensorflow/tfjs-node');
 const fs = require('fs');
 
 async function loadModel() {
-    const model = await tf.loadLayersModel('file://./NGINX/model/model.json');
+    const model = await tf.loadLayersModel('file://./plugin/NGINX/model/model.json');
     return model;
 }
 
-const accessLogData = fs.readFileSync('./NGINX/Train/test/access.log', 'utf8');
+const accessLogData = fs.readFileSync('./plugin/NGINX/Train/test/access.log', 'utf8');
 
 function parseNginxLogs(logData) {
     const logs = logData.split('\n');
