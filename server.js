@@ -9,8 +9,8 @@ const bodyParser = require('body-parser');
 const fs = require('fs');
 const axios = require('axios');
 const { createProxyMiddleware } = require('http-proxy-middleware');
-const evaluateAccessLog = require('./plugin/NGINX/evaluate.js');
-const train = require('./plugin/NGINX/train.js');
+const loadPlugins = require('./loadPlugins.js');
+loadPlugins(app);
 require("dotenv").config();
 const redis = require('redis');
 const client = global.client = redis.createClient({
@@ -103,47 +103,6 @@ async function createServer() {
       res.status(401).send('Unauthorized');
     }
   }
-
-
-  app.get('/evaluate', checkAuth, async (req, res, next) => {
-    try {
-      await evaluateAccessLog()
-        .then(maliciousUsers => {
-          if (maliciousUsers.length === 0) {
-            res.send('No malicious users detected.');
-          } else {
-            let mal = [];
-            maliciousUsers.forEach(user => {
-              if (mal.includes(user.ip) === false) {
-                mal.push(user.ip);
-              }
-            });
-            res.send(`Malicious users detected: ${mal}`);
-          }
-        })
-        .catch(err => {
-          console.error(err);
-          res.status(500).send('An error occurred while evaluating the access log.');
-        });
-    } catch (err) {
-      res.status(500).send(err.message);
-    }
-  });
-
-  app.get('/train', checkAuth, async (req, res) => {
-    try {
-      await train()
-        .then(data => {
-          res.json(data);
-        })
-        .catch(err => {
-          console.error(err);
-          res.status(500).send('An error occurred while training the model.');
-        });
-    } catch (err) {
-      res.status(500).send(err.message);
-    }
-  });
 
   async function runcheck(req, res, next) {
     const userIp = req.ip || req.headers['x-forwarded-for'];
