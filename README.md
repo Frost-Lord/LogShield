@@ -1,6 +1,6 @@
 # LogShield
 
-TensorFlow.js to monitor and detect malicious activity in both web server access and login logs. This robust system offers a safeguard for your server, detecting and flagging suspicious behaviors to help protect against potential security breaches.
+LogShield is a comprehensive machine learning project that leverages the powerful TensorFlow.js to monitor and detect malicious activity in both web server access and login logs. This robust system offers a safeguard for your server, detecting and flagging suspicious behaviors to help protect against potential security breaches.
 
 Powered by an intricate Recurrent Neural Network (RNN) model, LogShield specializes in sequential data understanding. This allows it to comprehend the temporal dependencies in the logs and accurately identify patterns of harmful activity. This approach is especially effective for login logs, where the sequence of attempts may indicate harmful intent.
 
