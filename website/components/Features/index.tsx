@@ -12,7 +12,7 @@ const Features = () => {
         <div className="container">
           <SectionTitle
             title="Main Features"
-            paragraph="There are many variations of passages of Lorem Ipsum available but the majority have suffered alteration in some form."
+            paragraph="LogShield is a comprehensive machine learning project that leverages the powerful TensorFlow.js to monitor and detect malicious activity in both web server access and login logs. This robust system offers a safeguard for your server, detecting and flagging suspicious behaviors to help protect against potential security breaches."
             center
           />
 
