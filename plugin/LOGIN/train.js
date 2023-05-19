@@ -53,40 +53,6 @@ async function trainModel(model, xs, ys) {
   return true;
 }
 
-function evaluateSuspiciousness(model, lines, tokenizer, timeSteps) {
-  const suspiciousIPs = [];
-
-  for (const text of lines) {
-    const preprocessedText = preprocessText(text);
-    const tokens = tokenizeText(preprocessedText);
-    let sequence = tokens.map((token) => tokenizer.wordIndex[token] || 0);
-
-    if (sequence.length > timeSteps) {
-      sequence = sequence.slice(0, timeSteps);
-    } else {
-      while (sequence.length < timeSteps) {
-        sequence.push(0);
-      }
-    }
-
-    const input = tf.tensor2d([sequence], [1, timeSteps]);
-
-    const prediction = model.predict(input);
-    const isSuspicious = prediction.dataSync()[0] >= 0.90;
-
-    if (isSuspicious) {
-      const ipPattern = /\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b/;
-      const match = text.match(ipPattern);
-      if (match) {
-        const ip = match[0];
-        suspiciousIPs.push(ip);
-      }
-    }
-  }
-
-  console.log(`Suspicious IPs: ${Array.from(new Set(suspiciousIPs))}`);
-}
-
 function processSequences(sequences, tokenizer, maxTimeSteps) {
   const processedSequences = sequences.map((seq) => {
     const wordIndices = seq.map((token) => tokenizer.wordIndex[token] || 0);
@@ -208,12 +174,11 @@ async function main() {
   );
   
   const processedSequences = processSequences(xs, tokenizer, maxTimeSteps);
-  const inputDim = 50;
+  return concsole.log("Main train function run")
   const model = createModel(uniqueWords.size + 1, inputDim);
 
   const ysTensor = tf.tensor2d(ys, [ys.length, 1]);
   await trainModel(model, processedSequences, ysTensor);
-  await evaluateSuspiciousness(model, lines, tokenizer, maxTimeSteps);
 }
 
-main().catch(console.error);
+module.exports = main;
