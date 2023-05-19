@@ -11,6 +11,26 @@ function preprocessText(text) {
   return lowercasedText;
 }
 
+function groupLogLinesByIP(lines) {
+  const ipPattern = /\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b/;
+  const logGroups = new Map();
+
+  for (const line of lines) {
+    const match = line.match(ipPattern);
+    if (match) {
+      const ip = match[0];
+
+      if (logGroups.has(ip)) {
+        logGroups.get(ip).push(line);
+      } else {
+        logGroups.set(ip, [line]);
+      }
+    }
+  }
+
+  return Array.from(logGroups.values());
+}
+
 function evaluateSuspiciousness(model, lines, tokenizer, timeSteps) {
   const suspiciousIPs = [];
 
@@ -42,10 +62,11 @@ function evaluateSuspiciousness(model, lines, tokenizer, timeSteps) {
     }
   }
 
-  console.log(`Suspicious IPs: ${Array.from(new Set(suspiciousIPs))}`);
+  return suspiciousIPs;
 }
 
 async function main() {
+  const model = await tf.loadLayersModel("file://./plugin/LOGIN/model/model.json");
     const data = fs.readFileSync("./plugin/LOGIN/train/auth.log", "utf-8");
     const lines = data.split("\n");
   
@@ -127,7 +148,7 @@ async function main() {
       )), 0
     );
     
-  await evaluateSuspiciousness(model, lines, tokenizer, maxTimeSteps);
+  return await evaluateSuspiciousness(model, lines, tokenizer, maxTimeSteps);
 }
 
 module.exports = main;

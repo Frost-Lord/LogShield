@@ -2,21 +2,19 @@ const fs = require('fs');
 const path = require('path');
 
 module.exports = (router, client, checkAuth) => {
-    fs.readdirSync(path.join(__dirname, './plugin')).forEach((dir) => {
-        const pluginPath = path.join(__dirname, './plugin', dir);
+    fs.readdirSync(path.join(__dirname, '../plugin')).forEach((dir) => {
+        const pluginPath = path.join(__dirname, '../plugin', dir);
         if(fs.lstatSync(pluginPath).isDirectory()) {
-            const plugin = require(path.join(pluginPath, 'index.js'));
-            router.use(`/api/${dir}`, plugin);
             
             router.post(`/${dir}/evaluate`, checkAuth, async (req, res, next) => {
                 try {
                     const evaluateAccessLog = require(path.join(pluginPath, 'evaluate.js'));
                     await evaluateAccessLog()
-                        .then(maliciousUsers => {
-                            if (maliciousUsers.length === 0) {
-                                res.send('No malicious users detected.');
+                        .then(data => {
+                            if (data.length === 0) {
+                                res.send('No malicious activities detected.');
                             } else {
-                                res.send(`Malicious users detected: ${maliciousUsers}`);
+                                res.send(`Malicious activities detected: ${data}`);
                             }
                         })
                         .catch(err => {
