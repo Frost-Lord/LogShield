@@ -1,6 +1,5 @@
 const { EmbedBuilder, WebhookClient } = require('discord.js');
 const { webhookId, webhookToken } = require('./config.json');
-
 const webhookClient = new WebhookClient({ id: webhookId, token: webhookToken });
 
 const logo = "https://cdn.discordapp.com/attachments/889348842179407926/1109455687764947024/logo.png";
