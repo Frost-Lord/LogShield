@@ -1,20 +1,40 @@
 const fs = require('fs');
 const path = require('path');
+const logger = require("../utils/logger");
+let CreateLog = null;
+let webhook = false;
 
 module.exports = (router, client, checkAuth) => {
     fs.readdirSync(path.join(__dirname, '../plugin')).forEach((dir) => {
         const pluginPath = path.join(__dirname, '../plugin', dir);
-        if(fs.lstatSync(pluginPath).isDirectory()) {
-            
+        if (fs.lstatSync(pluginPath).isDirectory()) {
+
+            logger.plugin("EVENT", `Loading plugin ${dir}`);
+
+            if (fs.existsSync(path.join(pluginPath, 'index.js'))) {
+                if (pluginPath.includes('DISCORD')) {
+                    webhook = true;
+                    try {
+                        CreateLog = require(path.join(pluginPath, 'index.js')).CreateLog;
+                    } catch (err) {
+                        logger.plugin("ERROR", `Failed to load plugin ${dir}`);
+                        logger.plugin("ERROR", err.message);
+                    }
+                }
+            }
+
             router.post(`/${dir}/evaluate`, checkAuth, async (req, res, next) => {
                 try {
                     const evaluateAccessLog = require(path.join(pluginPath, 'evaluate.js'));
                     await evaluateAccessLog()
-                        .then(data => {
+                        .then(async (data) => {
                             if (data.length === 0) {
                                 res.send('No malicious activities detected.');
                             } else {
                                 res.send(`Malicious activities detected: ${data}`);
+                                if (webhook && CreateLog) {
+                                    await CreateLog(dir, data);
+                                }
                             }
                         })
                         .catch(err => {

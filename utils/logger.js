@@ -49,6 +49,12 @@ const worker = (name, message) => {
 	console.log(clc.green(`${"[WORKER]"} [${name}] => `) + clc.yellow(message));
 }
 
+//Plugin
+
+const plugin = (name, message) => {
+	console.log(clc.magenta(`${"[PLUGIN]"} [${name}] => `) + clc.yellow(message));
+}
+
 module.exports = {
 	info,
 	debug,
@@ -57,4 +63,5 @@ module.exports = {
 	warn,
 	user,
 	worker,
+	plugin,
 };
