@@ -24,6 +24,7 @@
     "express": "^4.18.2",
     "express-session": "^1.17.3",
     "fs": "^0.0.1-security",
+    "geoip-lite": "^1.4.7",
     "http-proxy-middleware": "^2.0.6",
     "path": "^0.12.7",
     "pidusage": "^3.0.2",
