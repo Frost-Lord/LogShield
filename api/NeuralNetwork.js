@@ -31,7 +31,7 @@ module.exports = (router, client, checkAuth) => {
                             if (data.length === 0) {
                                 res.send('No malicious activities detected.');
                             } else {
-                                res.send(`Malicious activities detected: ${data}`);
+                                await res.send(data);
                                 if (webhook && CreateLog) {
                                     await CreateLog(dir, data);
                                 }

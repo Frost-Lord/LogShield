@@ -33,6 +33,7 @@ function groupLogLinesByIP(lines) {
 
 function evaluateSuspiciousness(model, lines, tokenizer, timeSteps) {
   const suspiciousIPs = [];
+  const seeds = [];
 
   for (const text of lines) {
     const preprocessedText = preprocessText(text);
@@ -48,7 +49,6 @@ function evaluateSuspiciousness(model, lines, tokenizer, timeSteps) {
     }
 
     const input = tf.tensor2d([sequence], [1, timeSteps]);
-
     const prediction = model.predict(input);
     const isSuspicious = prediction.dataSync()[0] >= 0.90;
 
@@ -59,10 +59,21 @@ function evaluateSuspiciousness(model, lines, tokenizer, timeSteps) {
         const ip = match[0];
         suspiciousIPs.push(ip);
       }
+
+      seeds.push({
+        prediction: (prediction.dataSync()[0] * 100).toFixed(2) + "%",
+        seed: sequence,
+        seedLength: sequence.length,
+        modelLayers: model.layers.map(layer => ({
+          name: layer.name,
+          type: layer.getClassName(),
+          config: layer.getConfig()
+        })),
+      });
     }
   }
 
-  return suspiciousIPs;
+  return { suspiciousIPs, seeds };
 }
 
 async function main() {
@@ -148,7 +159,12 @@ async function main() {
       )), 0
     );
     
-  return await evaluateSuspiciousness(model, lines, tokenizer, maxTimeSteps);
+    const evaluation = await evaluateSuspiciousness(model, lines, tokenizer, maxTimeSteps);
+
+    return {
+      suspiciousIPs: evaluation.suspiciousIPs,
+      Seed: evaluation.seeds
+    };
 }
 
 module.exports = main;

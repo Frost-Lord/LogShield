@@ -20,8 +20,18 @@ function createModel(vocabSize, inputDim) {
       inputLength: null,
     })
   );
-  model.add(tf.layers.simpleRNN({ units: 16, returnSequences: true }));
-  model.add(tf.layers.simpleRNN({ units: 16 }));
+  model.add(
+    tf.layers.bidirectional({
+      layer: tf.layers.simpleRNN({ units: 16, returnSequences: true }),
+      mergeMode: 'concat',
+    }),
+  );
+  model.add(
+    tf.layers.bidirectional({
+      layer: tf.layers.simpleRNN({ units: 16 }),
+      mergeMode: 'concat',
+    }),
+  );
   model.add(tf.layers.dense({ units: 1, activation: "sigmoid" }));
 
   model.compile({
@@ -32,6 +42,7 @@ function createModel(vocabSize, inputDim) {
 
   return model;
 }
+
 
 async function trainModel(model, xs, ys) {
   const numEpochs = 565;
@@ -174,11 +185,12 @@ async function main() {
   );
   
   const processedSequences = processSequences(xs, tokenizer, maxTimeSteps);
-  return concsole.log("Main train function run")
+  const inputDim = 50;
   const model = createModel(uniqueWords.size + 1, inputDim);
 
   const ysTensor = tf.tensor2d(ys, [ys.length, 1]);
   await trainModel(model, processedSequences, ysTensor);
+  return true;
 }
 
 module.exports = main;
