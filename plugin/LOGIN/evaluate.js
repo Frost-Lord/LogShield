@@ -72,7 +72,6 @@ function evaluateSuspiciousness(model, lines, tokenizer, timeSteps) {
       });
     }
   }
-
   return { suspiciousIPs, seeds };
 }
 

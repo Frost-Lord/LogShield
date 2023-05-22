@@ -57,15 +57,27 @@ async function evaluateAccessLog() {
     // Predict malicious users
     const predictions = model.predict(normalizedDataset);
     const threshold = 0.8;
-    const maliciousUsers = [];
+    const suspiciousIPs = [];
 
     predictions.dataSync().forEach((prediction, index) => {
         if (prediction >= threshold) {
-            maliciousUsers.push(parsedLogs[index]);
+            if (suspiciousIPs.includes(parsedLogs[index].ip)) return;
+            suspiciousIPs.push(parsedLogs[index].ip);
         }
-    });
+    })
+        const seeds = [];
+        seeds.push({
+            prediction: (predictions.dataSync()[0] * 100).toFixed(2) + "%",
+            seed: Math.floor(Math.random() * 1000),
+            seedLength: 21,
+            modelLayers: model.layers.map(layer => ({
+                name: layer.name,
+                type: layer.getClassName(),
+                config: layer.getConfig()
+            })),
+        });
 
-    return maliciousUsers;
+        return { suspiciousIPs, seeds };
 }
 
 module.exports = evaluateAccessLog;
