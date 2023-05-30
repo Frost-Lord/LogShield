@@ -26,7 +26,7 @@ module.exports = (router, client, checkAuth) => {
             router.post(`/${dir}/evaluate`, checkAuth, async (req, res, next) => {
                 try {
                     const evaluateAccessLog = require(path.join(pluginPath, 'evaluate.js'));
-                    await evaluateAccessLog()
+                    await evaluateAccessLog(req)
                         .then(async (data) => {
                             if (data.length === 0) {
                                 res.send('No malicious activities detected.');
