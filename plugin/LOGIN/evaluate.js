@@ -77,7 +77,7 @@ function evaluateSuspiciousness(model, lines, tokenizer, timeSteps) {
 
 async function main(req) {
   const model = await tf.loadLayersModel("file://./plugin/LOGIN/model/model.json");
-    const data = req.body.data === true ? fs.readFileSync(path.join('/', 'var', 'log', 'auth', 'auth.log'), "utf-8") : fs.readFileSync("./plugin/LOGIN/train/auth.log", "utf-8");
+    const data = req.body.data.live === true ? fs.readFileSync(path.join('/', 'var', 'log', 'auth', 'auth.log'), "utf-8") : fs.readFileSync("./plugin/LOGIN/train/auth.log", "utf-8");
     const lines = data.split("\n");
   
     const sequences = groupLogLinesByIP(lines);
