@@ -33,7 +33,7 @@ async function CreateLog(plugin, datapoints) {
   let seed = 0;
   let prediction = "";
   if (datapoints && Array.isArray(datapoints.Seed)) {
-    for(let obj of datapoints.Seed) {
+    for (let obj of datapoints.Seed) {
       if (Array.isArray(obj.seed)) {
         seed += obj.seed.reduce((acc, number) => acc + number, 0);
       }
@@ -45,14 +45,13 @@ async function CreateLog(plugin, datapoints) {
 
   const embed = new EmbedBuilder()
     .setColor(0xFFFF00)
-    .setAuthor({ name: 'LogShield', iconURL: logo})
     .setTitle('**Plugin Evaluation Result:**')
     .setDescription(`Automated system protection checks for plugin: **${plugin}**`)
     .addFields(
       { name: 'Top 5 Countries of Origin:', value: generateTopCountriesDescription(topCountries), inline: false },
-      { name: 'Potential Malicious Activities:', value: data.length > 0 ? '```' + data.join(', ') + '```' : 'No potential malicious activities detected', inline: false },
-      { name: `Model Stats`, value: `Prediction: ${prediction} \nSeed: ${seed}`, inline: false }
+      { name: 'Potential Malicious Activities:', value: generateDataValue(data), inline: false },
     )
+    .setFooter({ text: "Prediction: " + prediction + " | Seed: " + seed + " | Plugin: " + plugin + " | " + new Date().toLocaleString("en-US", { timeZone: "America/New_York" }) + " EST | " + data.length + " suspicious IP(s)" })
     .setTimestamp();
 
   await webhookClient.send({
@@ -68,6 +67,28 @@ function generateTopCountriesDescription(topCountries) {
     description += `**${index + 1}. ${countryCity}:** ${count} suspicious IP(s)\n`;
   });
   return description;
+}
+
+function generateDataValue(data) {
+  if (data.length > 0) {
+    if (data.length > 15) {
+      const remainingCount = data.length - 15;
+      return '```' + data.slice(0, 15).join(', ') + ` + ${remainingCount} more` + '```';
+    } else {
+      return '```' + data.join(', ') + '```';
+    }
+  } else {
+    return 'No potential malicious activities detected';
+  }
+}
+
+function generateDataLengthText(data) {
+  if (data.length > 15) {
+    const remainingCount = data.length - 15;
+    return `15 + ${remainingCount} more`;
+  } else {
+    return data.length + " suspicious IP(s) detected";
+  }
 }
 
 module.exports = { CreateLog };
