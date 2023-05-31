@@ -69,7 +69,7 @@ module.exports = (router, client, checkAuth) => {
       });
 
       setInterval(() => {
-        RunEval(pluginPath);
+        //RunEval(pluginPath);
       }, 10 * 1000); // 10s
     }
   });

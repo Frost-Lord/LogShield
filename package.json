@@ -4,9 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "train": "node ./NGINX/train.js",
-    "evaluate": "node ./NGINX/evaluate.js"
+    "start": "node server.js"
   },
   "author": "Frost-Lord",
   "license": "ISC",
