@@ -46,7 +46,7 @@ async function CreateLog(plugin, datapoints) {
   const embed = new EmbedBuilder()
     .setColor(0xFFFF00)
     .setTitle('**Plugin Evaluation Result:**')
-    .setDescription(`Automated system protection checks for plugin: **${plugin}**`)
+    .setDescription(`**Automated system protection checks for plugin:** ${plugin}`)
     .addFields(
       { name: 'Top 5 Countries of Origin:', value: generateTopCountriesDescription(topCountries), inline: false },
       { name: 'Potential Malicious Activities:', value: generateDataValue(data), inline: false },
