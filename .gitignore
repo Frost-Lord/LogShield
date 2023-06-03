@@ -128,3 +128,4 @@ dist
 # dotenv environment variable file
 .env
 config.json
+**/**/config.json

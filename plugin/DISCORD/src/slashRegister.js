@@ -6,7 +6,7 @@ let run = (client) => {
   const { Routes } = require("discord.js");
   const commands = [];
 
-  Commands("./src/slash");
+  Commands("./plugin/DISCORD/src/slash");
 
   function Commands(Files) {
     for (const file of fs.readdirSync(Files, { withFileTypes: true })) {
@@ -22,8 +22,6 @@ let run = (client) => {
   }
 
   const rest = new REST({ version: "10" }).setToken(token);
-  console.log("0------------------| Slash Command Handler: \n");
-  console.log("Started refreshing application (/) commands.");
   rest
     .put(Routes.applicationCommands(client.user.id), { body: commands })
     .then(() => console.log("Successfully reloaded application (/) commands."))

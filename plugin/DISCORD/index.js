@@ -1,13 +1,76 @@
-const { EmbedBuilder, WebhookClient } = require('discord.js');
-const { webhookId, webhookToken } = require('./config.json');
-const webhookClient = new WebhookClient({ id: webhookId, token: webhookToken });
+const {
+  Client,
+  GatewayIntentBits,
+  Partials,
+  Collection,
+  EmbedBuilder,
+  WebhookClient,
+  ButtonStyle,
+  ButtonBuilder,
+  ActionRowBuilder
+} = require("discord.js");
+const options = require("./config.json");
 const geoip = require('geoip-lite');
 
-const logo = "https://cdn.discordapp.com/attachments/889348842179407926/1109455687764947024/logo.png";
+const client = (global.client = new Client({
+  partials: [
+    Partials.Message,
+    Partials.GuildPresences,
+    Partials.Channel,
+    Partials.GuildMember,
+    Partials.Reaction,
+    Partials.GuildScheduledEvent,
+    Partials.User,
+    Partials.ThreadMember,
+    Partials.MessageReaction,
+    Partials.Invite,
+    Partials.Webhook,
+    Partials.Emoji,
+    Partials.Guild,
+    Partials.GuildChannel,
+    Partials.GuildEmoji,
+    Partials.GuildMember,
+    Partials.GuildMemberRole,
+    Partials.GuildMessage,
+    Partials.GuildMessageReaction,
+    Partials.GuildRole,
+  ],
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildEmojisAndStickers,
+    GatewayIntentBits.GuildIntegrations,
+    GatewayIntentBits.GuildWebhooks,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.GuildMessageReactions,
+    GatewayIntentBits.GuildMessageTyping,
+    GatewayIntentBits.DirectMessages,
+    GatewayIntentBits.MessageContent,
+  ],
+}));
 
+client.events = new Collection();
+client.slash = new Collection();
+
+/////////////////////////////////////////////////////////////////////////////////////
+//events
+["events"].forEach((file) => {
+  require(`./src/handlers/${file}`)(client);
+});
+
+client.login(options.token).catch((err) => {
+  console.warn(
+    "[CRASH] Something went wrong while connecting to your bot..." + "\n"
+  );
+  console.warn("[CRASH] Error from Discord API:" + err);
+  process.exit();
+});
+
+
+/////////////////////////////////////////////////////////////////////////////////////
 async function CreateLog(plugin, datapoints) {
 
-  if (!webhookId || !webhookToken) return;
+  const channel = client.channels.cache.get(options.logChannel);
+  if (!channel) return console.warn(`[LOG] ${plugin} channel ID not found!`);
 
   const data = datapoints.suspiciousIPs;
   let locations = data.map((ip) => {
@@ -43,22 +106,71 @@ async function CreateLog(plugin, datapoints) {
     }
   }
 
+  const row1 = new ActionRowBuilder()
+  .addComponents(
+    new ButtonBuilder()
+      .setCustomId(`BanAllIPs`)
+      .setLabel('Ban All IPs')
+      .setStyle(ButtonStyle.Danger)
+      .setEmoji('💣')
+  )
+  .addComponents(
+    new ButtonBuilder()
+      .setCustomId(`BanCustomIPs`)
+      .setLabel('Ban Custom IPs')
+      .setStyle(ButtonStyle.Danger)
+      .setEmoji('🛠️')
+  )
+  .addComponents(
+    new ButtonBuilder()
+      .setCustomId(`BanCountry`)
+      .setLabel('Ban Country')
+      .setStyle(ButtonStyle.Danger)
+      .setEmoji('🏙️')
+  );
+
+const row2 = new ActionRowBuilder()
+  .addComponents(
+    new ButtonBuilder()
+      .setCustomId(`UnbanIPs`)
+      .setLabel('Unban IPs')
+      .setStyle(ButtonStyle.Success)
+      .setEmoji('🔓')
+  )
+  .addComponents(
+    new ButtonBuilder()
+      .setCustomId(`UnbanCountry`)
+      .setLabel('Unban Country')
+      .setStyle(ButtonStyle.Success)
+      .setEmoji('🔓')
+  )
+  .addComponents(
+    new ButtonBuilder()
+      .setCustomId(`Re-evaluate`)
+      .setLabel('Re-evaluate')
+      .setStyle(ButtonStyle.Primary)
+      .setEmoji('🔄')
+  );
+
+  const pluginNormalized = plugin.toLowerCase().charAt(0).toUpperCase() + plugin.toLowerCase().slice(1);
+
   const embed = new EmbedBuilder()
     .setColor(0xFFFF00)
     .setTitle('**Plugin Evaluation Result:**')
-    .setDescription(`**Automated system protection checks for plugin:** ${plugin}`)
+    .setDescription(`**Automated system protection checks for plugin:** ${pluginNormalized}`)
     .addFields(
       { name: 'Top 5 Countries of Origin:', value: generateTopCountriesDescription(topCountries), inline: false },
       { name: 'Potential Malicious Activities:', value: generateDataValue(data), inline: false },
     )
-    .setFooter({ text: "Prediction: " + prediction + " | Seed: " + seed + " | Plugin: " + plugin + " | " + new Date().toLocaleString("en-US", { timeZone: "America/New_York" }) + " EST | " + data.length + " suspicious IP(s)" })
+    .setFooter({ text: "Prediction: " + prediction + " | Seed: " + seed + " | Plugin: " + pluginNormalized + " | " + new Date().toLocaleString("en-US", { timeZone: "America/New_York" }) + " EST | " + data.length + " suspicious IP(s)" })
     .setTimestamp();
 
-  await webhookClient.send({
-    username: 'LogShield',
-    avatarURL: logo,
-    embeds: [embed],
-  });
+    await channel.send({ embeds: [embed], components: [row1, row2] }).then(async () => {
+      console.log(`[LOG] ${plugin} log created!`);
+    }).catch((err) => {
+      console.warn(`[LOG] ${plugin} log failed to create!`);
+      console.warn(`[LOG] Error from Discord API: ${err}`);
+    });
 }
 
 function generateTopCountriesDescription(topCountries) {
@@ -79,15 +191,6 @@ function generateDataValue(data) {
     }
   } else {
     return 'No potential malicious activities detected';
-  }
-}
-
-function generateDataLengthText(data) {
-  if (data.length > 15) {
-    const remainingCount = data.length - 15;
-    return `15 + ${remainingCount} more`;
-  } else {
-    return data.length + " suspicious IP(s) detected";
   }
 }
 

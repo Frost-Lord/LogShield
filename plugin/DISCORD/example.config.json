@@ -1,4 +1,4 @@
 {
-    "webhookToken": "",
-    "webhookId": ""
+    "token": "",
+    "logChannel": ""
 }
