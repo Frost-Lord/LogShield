@@ -127,4 +127,4 @@ dist
 
 # dotenv environment variable file
 .env
-/plugin/DISCORD/config.json
+plugin/DISCORD/config.json
