@@ -32,5 +32,8 @@
     "path": "^0.12.7",
     "pidusage": "^3.0.2",
     "redis": "^4.6.6"
+  },
+  "devDependencies": {
+    "jest-environment-jsdom": "^29.5.0"
   }
 }
