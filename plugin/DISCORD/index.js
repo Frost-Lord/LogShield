@@ -62,7 +62,7 @@ client.login(options.token).catch((err) => {
     "[CRASH] Something went wrong while connecting to your bot..." + "\n"
   );
   console.warn("[CRASH] Error from Discord API:" + err);
-  process.exit();
+  //process.exit();
 });
 
 
