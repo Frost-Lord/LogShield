@@ -94,6 +94,8 @@ cd /etc/logshield
 npm install
 cp example.env .env
 # Edit .env
+nano .env //change all vars you want
+# Start a system process
 cp logshield.service /etc/systemd/system/logshield.service
 systemctl enable --now logshield
 ```
