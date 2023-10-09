@@ -5,7 +5,6 @@ const { bandwidth } = require('../middleware/bandwidth');
 const os = require('node:os');
 const pidusage = require('pidusage');
 
-
 module.exports = (router, client, checkAuth) => {
     router.post("/admin", checkAuth, async (req, res) => {
         const processStats = await pidusage(process.pid);
@@ -46,7 +45,6 @@ module.exports = (router, client, checkAuth) => {
                 "networkInterfaces": os.networkInterfaces(),
             },
         }
-
         res.send(data);
     });
 };
