@@ -48,8 +48,8 @@ dependencies:
     specifier: ^4.8.0
     version: 4.10.1(react@18.2.0)
   sharp:
-    specifier: ^0.32.1
-    version: 0.32.4
+    specifier: ^0.32.6
+    version: 0.32.6
 
 devDependencies:
   '@types/node':
@@ -366,7 +366,7 @@ packages:
       debug: 4.3.4
       globby: 11.1.0
       is-glob: 4.0.3
-      semver: 7.3.8
+      semver: 7.5.4
       tsutils: 3.21.0(typescript@5.0.4)
       typescript: 5.0.4
     transitivePeerDependencies:
@@ -2477,14 +2477,6 @@ packages:
     hasBin: true
     dev: false
 
-  /semver@7.3.8:
-    resolution: {integrity: sha512-NB1ctGL5rlHrPJtFDVIVzTyQylMLu9N9VICA6HSFJo8MCGVTMW6gfpicwKmmK/dAjTOrqu5l63JJOpDSrAis3A==}
-    engines: {node: '>=10'}
-    hasBin: true
-    dependencies:
-      lru-cache: 6.0.0
-    dev: false
-
   /semver@7.5.4:
     resolution: {integrity: sha512-1bCSESV6Pv+i21Hvpxp3Dx+pSD8lIPt8uVjRrxAUt/nbswYc+tK6Y2btiULjd4+fnq15PX+nqQDC7Oft7WkwcA==}
     engines: {node: '>=10'}
@@ -2493,8 +2485,8 @@ packages:
       lru-cache: 6.0.0
     dev: false
 
-  /sharp@0.32.4:
-    resolution: {integrity: sha512-exUnZewqVZC6UXqXuQ8fyJJv0M968feBi04jb9GcUHrWtkRoAKnbJt8IfwT4NJs7FskArbJ14JAFGVuooszoGg==}
+  /sharp@0.32.6:
+    resolution: {integrity: sha512-KyLTWwgcR9Oe4d9HwCwNM2l7+J0dUQwn/yf7S0EnTtb0eVS4RxO0eUSvxPtzT4F3SY+C4K6fqdv/DO27sJ/v/w==}
     engines: {node: '>=14.15.0'}
     requiresBuild: true
     dependencies:
